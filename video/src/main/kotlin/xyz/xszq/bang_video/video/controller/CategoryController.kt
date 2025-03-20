@@ -5,10 +5,10 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import xyz.xszq.bang_video.common.vo.VideoVO
 import xyz.xszq.bang_video.video.service.CategoryService
 import xyz.xszq.bang_video.video.service.VideoService
 import xyz.xszq.bang_video.video.vo.CategoryVO
-import xyz.xszq.bang_video.video.vo.VideoVO
 
 @RestController
 @RequestMapping("/category")

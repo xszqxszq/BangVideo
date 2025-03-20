@@ -5,11 +5,11 @@ import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
+import xyz.xszq.bang_video.common.vo.VideoVO
 import xyz.xszq.bang_video.video.dto.VideoDTO
 import xyz.xszq.bang_video.video.entity.Video
 import xyz.xszq.bang_video.video.mapper.VideoMapper
 import xyz.xszq.bang_video.video.repository.VideoRepository
-import xyz.xszq.bang_video.video.vo.VideoVO
 import java.time.LocalDateTime
 
 @Service
@@ -63,7 +63,7 @@ class VideoService(
     fun delete(
         id: Long,
         userId: Long
-    ): Boolean {
+    ) {
         val video = videoRepository.findByIdOrNull(id) ?: throw Exception("NotFound")
         if (video.owner != userId)
             throw Exception("NotOwner")
@@ -72,7 +72,6 @@ class VideoService(
 
         video.deleted = true
         videoRepository.save(video)
-        return true
     }
     fun findById(id: Long): VideoVO? {
         return videoRepository.findByIdOrNull(id)?.let {
@@ -112,5 +111,8 @@ class VideoService(
             Video::class.java
         ).mapNotNull { mapper.toVO(it) }
         return videos
+    }
+    fun batch(list: List<Long>): List<VideoVO> {
+        return videoRepository.findAllByIdIn(list).mapNotNull { mapper.toVO(it) }
     }
 }

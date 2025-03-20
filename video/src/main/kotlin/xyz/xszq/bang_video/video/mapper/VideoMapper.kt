@@ -6,7 +6,7 @@ import org.mapstruct.MappingTarget
 import org.mapstruct.Mappings
 import xyz.xszq.bang_video.video.dto.VideoDTO
 import xyz.xszq.bang_video.video.entity.Video
-import xyz.xszq.bang_video.video.vo.VideoVO
+import xyz.xszq.bang_video.common.vo.VideoVO
 import java.time.LocalDateTime
 
 @Mapper
