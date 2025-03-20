@@ -12,15 +12,16 @@ data class User(
     @Id
     val id: Long,
     val username: String,
-    val password: String,
-    val email: String,
-    val nickname: String,
+    var password: String,
+    var email: String,
+    var nickname: String,
     @Column(
         columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
     )
-    val created: LocalDateTime,
+    var created: LocalDateTime,
     @Column(
         columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"
     )
-    val updated: LocalDateTime,
+    var updated: LocalDateTime,
+    var deleted: Boolean
 )

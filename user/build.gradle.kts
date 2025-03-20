@@ -24,6 +24,7 @@ repositories {
 
 dependencies {
     kapt("org.mapstruct:mapstruct-processor:1.5.5.Final")
+    implementation(project(":common"))
     runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
     implementation("com.alibaba.cloud:spring-cloud-starter-alibaba-nacos-discovery")
     implementation("org.jetbrains.kotlin:kotlin-reflect")

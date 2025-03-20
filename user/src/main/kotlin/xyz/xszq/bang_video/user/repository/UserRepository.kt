@@ -8,7 +8,7 @@ import xyz.xszq.bang_video.user.entity.User
 @Repository
 @EnableJpaRepositories
 interface UserRepository: JpaRepository<User, Long> {
-    fun findByUsername(username: String): User?
-    fun findByNickname(nickname: String): User?
-    fun findByEmail(email: String): User?
+    fun findByUsernameAndDeletedFalse(username: String): User?
+    fun findByNicknameAndDeletedFalse(nickname: String): User?
+    fun findByEmailAndDeletedFalse(email: String): User?
 }
