@@ -6,5 +6,6 @@ import xyz.xszq.bang_video.community.entity.Comment
 
 @Repository
 interface CommentRepository: MongoRepository<Comment, String> {
+    fun findByIdAndDeletedIsFalse(id: String): Comment?
     fun findAllByVideoAndDeletedIsFalse(video: Long): List<Comment>
 }

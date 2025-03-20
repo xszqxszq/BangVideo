@@ -6,21 +6,17 @@ import org.springframework.data.mongodb.core.index.CompoundIndexes
 import org.springframework.data.mongodb.core.mapping.Document
 import java.time.LocalDateTime
 
-@Document("comment")
+@Document(collection = "favorite")
 @CompoundIndexes(value = [
-    CompoundIndex(name = "video_index",  def = "{video: 1}"),
-    CompoundIndex(name = "parent_index",  def = "{parent: 1}"),
-    CompoundIndex(name = "created_index",  def = "{created: 1}")
+    CompoundIndex(name = "user_index",  def = "{user: 1}")
 ])
-data class Comment(
+data class Favorite(
     @Id
     val id: String,
-    val video: Long,
     val user: Long,
-    var content: String,
-    val parent: String? = null,
+    val name: String,
+    val videos: MutableList<Long> = mutableListOf(),
     val created: LocalDateTime = LocalDateTime.now(),
     var updated: LocalDateTime = LocalDateTime.now(),
-    val likes: Int = 0,
     var deleted: Boolean = false
 )
