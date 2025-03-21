@@ -1,8 +1,8 @@
+val springBootVersion: String by rootProject.extra
 val springCloudVersion: String by rootProject.extra
 plugins {
     kotlin("jvm")
     kotlin("plugin.spring")
-    id("org.springframework.boot")
     id("io.spring.dependency-management")
 }
 group = "xyz.xszq.bang_video"
@@ -31,6 +31,7 @@ dependencies {
 
 dependencyManagement {
     imports {
+        mavenBom("org.springframework.boot:spring-boot-dependencies:$springBootVersion")
         mavenBom("org.springframework.cloud:spring-cloud-dependencies:$springCloudVersion")
     }
 }

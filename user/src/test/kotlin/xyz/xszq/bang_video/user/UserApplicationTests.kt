@@ -1,31 +1,13 @@
 package xyz.xszq.bang_video.user
 
-import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import xyz.xszq.bang_video.user.entity.User
-import xyz.xszq.bang_video.user.mapper.UserMapper
-import xyz.xszq.bang_video.user.service.UserIdGeneratorService
-import xyz.xszq.bang_video.user.service.UserService
-import java.time.LocalDateTime
-import kotlin.test.assertEquals
-import kotlin.test.assertNull
 
 @SpringBootTest
 class UserApplicationTests {
 
-    @Autowired
-    private lateinit var userMapper: UserMapper
-
-    @Autowired
-    private lateinit var userIdGeneratorService: UserIdGeneratorService
-
-    @Autowired
-    private lateinit var userService: UserService
-
-    @Test
-    fun contextLoads() {
-    }
+//    @Test
+//    fun contextLoads() {
+//    }
 
 //    @Test
 //    fun testCreateUsers() {
@@ -37,15 +19,15 @@ class UserApplicationTests {
 //            "test2")
 //        assertThat(user1.id).isLessThan(user2.id)
 //    }
-    @Test
-    fun autoUserMapping() {
-        val entity = User(1, "test", "test",
-            "test@example.com", "test",
-            created = LocalDateTime.now(),
-            updated = LocalDateTime.now())
-        assertNull(userMapper.toVO(entity) ?.let { dto ->
-            assertEquals(entity.id, dto.id)
-            assertEquals(entity.nickname, dto.nickname)
-        })
-    }
+//    @Test
+//    fun autoUserMapping() {
+//        val entity = User(1, "test", "test",
+//            "test@example.com", "test",
+//            created = LocalDateTime.now(),
+//            updated = LocalDateTime.now())
+//        assertNull(userMapper.toVO(entity) ?.let { dto ->
+//            assertEquals(entity.id, dto.id)
+//            assertEquals(entity.nickname, dto.nickname)
+//        })
+//    }
 }

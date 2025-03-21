@@ -1,0 +1,129 @@
+services:
+  nacos:
+    networks:
+      - bang-video
+    image: nacos/nacos-server:v2.5.1
+    ports:
+      - "8848:8848"
+    environment:
+      - MODE=standalone
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8848/nacos/"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    networks:
+      - bang-video
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  mongodb:
+    networks:
+      - bang-video
+    image: mongo:6.0
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=password
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+
+  mariadb:
+    networks:
+      - bang-video
+    image: mariadb:10.11
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=bang_video
+    command: [ '--bind-address=0.0.0.0' ]
+    ports:
+      - "3306:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+
+  gateway:
+    networks:
+      - bang-video
+    build:
+      context: ./gateway
+      dockerfile: Dockerfile
+    ports:
+      - "7001:7001"
+    environment:
+      - SERVER_PORT=7001
+      - NACOS_SERVER=nacos:8848
+    depends_on:
+      nacos:
+        condition: service_healthy
+
+  user:
+    networks:
+      - bang-video
+    build:
+      context: ./user
+      dockerfile: Dockerfile
+    environment:
+      - SERVER_PORT=8001
+      - NACOS_SERVER=nacos:8848
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - MARIADB_HOST=mariadb
+      - MARIADB_PORT=3306
+      - MARIADB_USER=root
+      - MARIADB_PASSWORD=root
+    depends_on:
+      nacos:
+        condition: service_healthy
+
+  video:
+    networks:
+      - bang-video
+    build:
+      context: ./video
+      dockerfile: Dockerfile
+    environment:
+      - SERVER_PORT=8002
+      - NACOS_SERVER=nacos:8848
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - MONGODB_HOST=mongodb
+      - MONGODB_PORT=27017
+      - MONGODB_USER=root
+      - MONGODB_PASSWORD=password
+    depends_on:
+      nacos:
+        condition: service_healthy
+
+  community:
+    networks:
+      - bang-video
+    build:
+      context: ./community
+      dockerfile: Dockerfile
+    environment:
+      - SERVER_PORT=8003
+      - NACOS_SERVER=nacos:8848
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - MONGODB_HOST=mongodb
+      - MONGODB_PORT=27017
+      - MONGODB_USER=root
+      - MONGODB_PASSWORD=password
+    depends_on:
+      nacos:
+        condition: service_healthy
+
+volumes:
+  redis_data:
+  mongodb_data:
+  mariadb_data:
+
+networks:
+  bang-video:
+    driver: bridge

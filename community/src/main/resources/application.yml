@@ -1,19 +1,15 @@
 server:
-  port: 8003
+  port: ${SERVER_PORT:8003}
 spring:
   application:
     name: community-service
   cloud:
     nacos:
       discovery:
-        server-addr: 127.0.0.1:8848
+        server-addr: ${NACOS_SERVER:nacos:8848}
   data:
     redis:
-      host: localhost
-      port: 6379
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
     mongodb:
-      host: localhost
-      port: 27017
-      username: video
-      password: kkskkksk
-      database: BangVideo
+      uri: mongodb://${MONGODB_USER:root}:${MONGODB_PASSWORD:password}@${MONGODB_HOST:localhost}:${MONGODB_PORT:27017}/BangVideo?authSource=admin
