@@ -16,12 +16,14 @@ import java.time.LocalDateTime
 abstract class FavoriteMapper {
     @Autowired
     protected lateinit var videoFeignService: VideoFeignService
+
     @Mappings(value = [
         Mapping(source = "videos", target = "videos", qualifiedByName = ["mapVideos"]),
         Mapping(source = "created", target = "created", dateFormat = "yyyy-MM-dd HH:mm:ss"),
         Mapping(source = "updated", target = "updated", dateFormat = "yyyy-MM-dd HH:mm:ss")
     ])
     abstract fun toVO(favorite: Favorite): FavoriteVO
+
     @Mappings(value = [
         Mapping(source = "time", target = "created", dateFormat = "yyyy-MM-dd HH:mm:ss"),
         Mapping(source = "time", target = "updated", dateFormat = "yyyy-MM-dd HH:mm:ss")
@@ -34,6 +36,7 @@ abstract class FavoriteMapper {
         videos: List<Long> = emptyList(),
         deleted: Boolean = false
     ): Favorite
+
     @Named("mapVideos")
     fun mapVideos(videos: List<Long>): List<VideoVO> {
         if (videos.isEmpty()) return mutableListOf()
