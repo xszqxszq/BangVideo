@@ -5,5 +5,6 @@ data class UserDetailedVO(
     val username: String,
     val email: String,
     val nickname: String,
+    val avatar: String,
     val created: String,
 )

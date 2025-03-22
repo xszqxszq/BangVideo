@@ -15,6 +15,7 @@ data class User(
     var password: String,
     var email: String,
     var nickname: String,
+    var avatar: String,
     @Column(
         columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
     )

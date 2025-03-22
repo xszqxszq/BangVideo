@@ -96,6 +96,10 @@ class UserService(
             }
             user.nickname = dto.nickname
         }
+        // TODO: Not Atomic
+        dto.avatar ?.let {
+            user.avatar = dto.avatar
+        }
         user.updated = LocalDateTime.now()
         repository.save(user)
         return mapper.toDetailedVO(user)
