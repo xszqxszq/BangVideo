@@ -5,6 +5,7 @@ data class UserInternalVO(
     val username: String,
     val email: String,
     val nickname: String,
+    val avatar: String,
     val created: String,
     val updated: String
 )
