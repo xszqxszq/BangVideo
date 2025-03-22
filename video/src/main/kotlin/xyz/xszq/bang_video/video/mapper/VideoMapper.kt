@@ -24,10 +24,12 @@ interface VideoMapper {
         duration: Int,
         time: LocalDateTime
     ): Video
+
     @Mappings(value = [
         Mapping(source = "created", target = "created", dateFormat = "yyyy-MM-dd HH:mm:ss"),
         Mapping(source = "updated", target = "updated", dateFormat = "yyyy-MM-dd HH:mm:ss")
     ])
     fun toVO(video: Video?): VideoVO?
+
     fun update(dto: VideoDTO, @MappingTarget entity: Video)
 }
