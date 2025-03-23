@@ -12,6 +12,7 @@ import xyz.xszq.bang_video.encoding.ffmpeg.FFMpegTask
 import xyz.xszq.bang_video.encoding.ffmpeg.FFProbe
 import xyz.xszq.bang_video.encoding.service.ResolutionService
 import kotlin.io.path.Path
+import kotlin.math.roundToInt
 
 @Component
 class EncodingListener(
@@ -31,16 +32,15 @@ class EncodingListener(
         val saveDir = video.resolve(cid.toString()).toFile().also {
             it.mkdir()
         }
+        var duration = 0.0
         val videoStream = kotlin.runCatching {
             FFProbe(pre, showStreams = true).getResult().let { info ->
-                val duration = info.format ?.duration ?.toDouble()
+                duration = info.format ?.duration ?.toDouble()
                     ?: throw IllegalStateException()
                 if (duration < 1)
                     throw IllegalStateException()
                 info.streams ?.firstOrNull { it.codecType == "video" }
             }
-        }.onFailure {
-            it.printStackTrace()
         }.getOrNull() ?: run {
             rabbitTemplate.convertAndSend("encoding.failed", cid)
             pre.delete()
@@ -74,7 +74,7 @@ class EncodingListener(
 
         pre.delete()
         rabbitTemplate.convertAndSend("encoding.finished",
-            EncodingResult(cid, resolutions)
+            EncodingResult(cid, duration.roundToInt(), resolutions)
         )
     }
 }

@@ -27,29 +27,21 @@ spring:
             - Path=/user/**
           filters:
             - StripPrefix=1
-            - RemoveRequestHeader=X-Request-Source
-            - AddRequestHeader=X-Request-Source, external
         - id: video-service
           uri: lb://video-service
           predicates:
             - Path=/video/**
           filters:
             - StripPrefix=1
-            - RemoveRequestHeader=X-Request-Source
-            - AddRequestHeader=X-Request-Source, external
         - id: community-service
           uri: lb://community-service
           predicates:
             - Path=/community/**
           filters:
             - StripPrefix=1
-            - RemoveRequestHeader=X-Request-Source
-            - AddRequestHeader=X-Request-Source, external
         - id: file-service
           uri: lb://file-service
           predicates:
             - Path=/file/**
           filters:
             - StripPrefix=1
-            - RemoveRequestHeader=X-Request-Source
-            - AddRequestHeader=X-Request-Source, external

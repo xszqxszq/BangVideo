@@ -88,8 +88,6 @@ services:
     build:
       context: ./user
       dockerfile: Dockerfile
-    ports:
-      - "8001:8001"
     environment:
       - SERVER_PORT=8001
       - NACOS_SERVER=nacos:8848
@@ -142,6 +140,9 @@ services:
       - MONGODB_PORT=27017
       - MONGODB_USER=root
       - MONGODB_PASSWORD=password
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - SPRING_AMQP_DESERIALIZATION_TRUST_ALL=true
     depends_on:
       nacos:
         condition: service_healthy
@@ -159,6 +160,7 @@ services:
       - REDIS_PORT=6379
       - RABBITMQ_HOST=rabbitmq
       - RABBITMQ_PORT=5672
+      - SPRING_AMQP_DESERIALIZATION_TRUST_ALL=true
     depends_on:
       nacos:
         condition: service_healthy
@@ -182,6 +184,7 @@ services:
       - MONGODB_PASSWORD=password
       - RABBITMQ_HOST=rabbitmq
       - RABBITMQ_PORT=5672
+      - SPRING_AMQP_DESERIALIZATION_TRUST_ALL=true
     depends_on:
       nacos:
         condition: service_healthy

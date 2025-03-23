@@ -2,11 +2,9 @@ package xyz.xszq.bang_video.file
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
-import org.springframework.cloud.openfeign.EnableFeignClients
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession
 import java.io.File
 
-@EnableFeignClients
 @EnableRedisHttpSession
 @SpringBootApplication
 class FileApplication

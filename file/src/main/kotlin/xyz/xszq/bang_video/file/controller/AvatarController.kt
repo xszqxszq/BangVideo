@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
 import xyz.xszq.bang_video.file.vo.AvatarVO
-import java.util.UUID
+import java.util.*
 import javax.imageio.ImageIO
 import kotlin.io.path.Path
 
