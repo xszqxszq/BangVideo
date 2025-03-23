@@ -1,5 +1,6 @@
 package xyz.xszq.bang_video.common.vo
 
+import java.io.Serializable
 import java.time.LocalDateTime
 
 data class VideoVO(
@@ -17,4 +18,4 @@ data class VideoVO(
     val favorites: Long,
     val created: LocalDateTime,
     val updated: LocalDateTime
-)
+): Serializable

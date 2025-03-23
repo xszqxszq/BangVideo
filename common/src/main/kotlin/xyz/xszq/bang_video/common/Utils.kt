@@ -1,9 +1,10 @@
 package xyz.xszq.bang_video.common
 
 import jakarta.servlet.http.HttpServletRequest
+import org.springframework.amqp.rabbit.core.RabbitTemplate
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import xyz.xszq.bang_video.common.feign.VideoFeignService
+import xyz.xszq.bang_video.common.vo.VideoVO
 
 fun exceptionHandler(throwable: Throwable): HttpStatus =
     when (throwable.message) {
@@ -39,26 +40,46 @@ inline fun <T> withUser(
     }.getOrNull()
     return ResponseEntity.ok(result)
 }
-inline fun <T> VideoFeignService.action(
+fun RabbitTemplate.getVideoInfo(videoId: Long): VideoVO? {
+    val result = convertSendAndReceive(
+        "video.info", videoId
+    )
+    return when (result) {
+        is VideoVO -> result
+        else -> null
+    }
+}
+inline fun <T> RabbitTemplate.withVideo(
     videoId: Long,
     handler: () -> T?
 ): ResponseEntity<T?> {
     kotlin.runCatching {
-        getInfo(videoId)
-    }.onFailure {
-        return ResponseEntity.notFound().build()
-    }
+        getVideoInfo(videoId)
+    }.getOrNull() ?: return ResponseEntity.notFound().build()
     return action(handler)
 }
-inline fun <T> VideoFeignService.withUser(
+inline fun <T> RabbitTemplate.withUser(
     videoId: Long,
     request: HttpServletRequest,
     handler: (Long) -> T?
 ): ResponseEntity<T?> {
     kotlin.runCatching {
-        getInfo(videoId) ?: throw Exception("NotFound")
-    }.onFailure {
-        return ResponseEntity.notFound().build()
-    }
+        getVideoInfo(videoId)
+    }.getOrNull() ?: return ResponseEntity.notFound().build()
     return withUser(request, handler)
+}
+fun getIP(request: HttpServletRequest): String {
+    return listOf(
+        "CLIENT-IP",
+        "X-Forwarded-For",
+        "Proxy-Client-IP",
+        "WL-Proxy-Client-IP",
+        "HTTP_CLIENT_IP",
+        "HTTP_X_FORWARDED_FOR",
+        "X-Real-IP"
+    ).firstNotNullOfOrNull { header ->
+        request.getHeader(header) ?.let { value ->
+            value.split(",").firstOrNull() ?.trim()
+        }
+    } ?: request.remoteAddr
 }

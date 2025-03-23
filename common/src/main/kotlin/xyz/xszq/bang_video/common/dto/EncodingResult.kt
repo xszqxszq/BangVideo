@@ -4,5 +4,6 @@ import java.io.Serializable
 
 data class EncodingResult(
     val cid: Long,
+    val duration: Int,
     val resolutions: List<Int>
 ): Serializable
