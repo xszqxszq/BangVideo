@@ -2,12 +2,7 @@ package xyz.xszq.bang_video.user.controller
 
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.DeleteMapping
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import xyz.xszq.bang_video.common.withUser
 import xyz.xszq.bang_video.user.dto.UserUpdateDTO
 import xyz.xszq.bang_video.user.service.UserService

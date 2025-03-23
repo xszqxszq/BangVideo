@@ -4,15 +4,14 @@ import jakarta.transaction.Transactional
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
-import xyz.xszq.bang_video.common.vo.UserInternalVO
-import xyz.xszq.bang_video.user.vo.UserVO
-import xyz.xszq.bang_video.user.entity.User
-import xyz.xszq.bang_video.user.mapper.UserMapper
-import xyz.xszq.bang_video.user.repository.UserRepository
 import xyz.xszq.bang_video.user.dto.UserCreateDTO
 import xyz.xszq.bang_video.user.dto.UserLoginDTO
 import xyz.xszq.bang_video.user.dto.UserUpdateDTO
+import xyz.xszq.bang_video.user.entity.User
+import xyz.xszq.bang_video.user.mapper.UserMapper
+import xyz.xszq.bang_video.user.repository.UserRepository
 import xyz.xszq.bang_video.user.vo.UserDetailedVO
+import xyz.xszq.bang_video.user.vo.UserVO
 import java.time.LocalDateTime
 
 @Service
@@ -58,15 +57,6 @@ class UserService(
             ?: return null
         return if (encoder.matches(request.password, user.password))
             user
-        else
-            null
-    }
-    @Transactional
-    fun authenticateSession(userId: Long, password: String): UserInternalVO? {
-        val user = repository.findByIdOrNull(userId)
-            ?: return null
-        return if (user.password == password)
-            mapper.toInternalVO(user)
         else
             null
     }
