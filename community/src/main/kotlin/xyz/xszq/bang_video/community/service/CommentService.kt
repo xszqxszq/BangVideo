@@ -10,7 +10,7 @@ import xyz.xszq.bang_video.community.repository.CommentRepository
 import xyz.xszq.bang_video.community.vo.CommentInfoVO
 import xyz.xszq.bang_video.community.vo.CommentVO
 import java.time.LocalDateTime
-import java.util.UUID
+import java.util.*
 
 @Service
 class CommentService(

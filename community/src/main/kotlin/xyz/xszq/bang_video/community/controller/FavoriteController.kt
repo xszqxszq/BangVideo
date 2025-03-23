@@ -1,17 +1,11 @@
 package xyz.xszq.bang_video.community.controller
 
 import jakarta.servlet.http.HttpServletRequest
+import org.springframework.amqp.rabbit.core.RabbitTemplate
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.DeleteMapping
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import xyz.xszq.bang_video.common.action
 import xyz.xszq.bang_video.common.withUser
-import xyz.xszq.bang_video.community.VideoFeignService
 import xyz.xszq.bang_video.community.dto.FavoriteCreateDTO
 import xyz.xszq.bang_video.community.service.FavoriteService
 import xyz.xszq.bang_video.community.vo.FavoriteVO
@@ -20,7 +14,7 @@ import xyz.xszq.bang_video.community.vo.FavoriteVO
 @RequestMapping("/favorite")
 class FavoriteController(
     private val service: FavoriteService,
-    private val videoFeignService: VideoFeignService,
+    private val rabbitTemplate: RabbitTemplate
 ) {
     @GetMapping("/")
     fun listFavorites(
@@ -63,7 +57,7 @@ class FavoriteController(
         videoId: Long,
         request: HttpServletRequest
     ): ResponseEntity<Unit?> =
-        videoFeignService.withUser(videoId, request) { userId ->
+        rabbitTemplate.withUser(videoId, request) { userId ->
             service.addVideo(favoriteId, videoId, userId)
         }
     @DeleteMapping("/{favoriteId}/{videoId}")

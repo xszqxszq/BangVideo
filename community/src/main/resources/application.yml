@@ -13,3 +13,13 @@ spring:
       port: ${REDIS_PORT:6379}
     mongodb:
       uri: mongodb://${MONGODB_USER:root}:${MONGODB_PASSWORD:password}@${MONGODB_HOST:localhost}:${MONGODB_PORT:27017}/BangVideo?authSource=admin
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
+    listener:
+      simple:
+        acknowledge-mode: manual
+        concurrency: 1
+        max-concurrency: 2

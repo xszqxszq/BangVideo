@@ -3,13 +3,14 @@ package xyz.xszq.bang_video.community.mapper
 import org.mapstruct.Mapper
 import org.mapstruct.Mapping
 import org.mapstruct.Mappings
+import org.mapstruct.ReportingPolicy
 import xyz.xszq.bang_video.community.dto.CommentDTO
 import xyz.xszq.bang_video.community.entity.Comment
 import xyz.xszq.bang_video.community.vo.CommentInfoVO
 import xyz.xszq.bang_video.community.vo.CommentVO
 import java.time.LocalDateTime
 
-@Mapper
+@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE)
 interface CommentMapper {
     @Mappings(value = [
         Mapping(source = "time", target = "created"),
@@ -20,20 +21,18 @@ interface CommentMapper {
         video: Long,
         user: Long,
         dto: CommentDTO,
-        time: LocalDateTime,
-        likes: Int = 0,
-        deleted: Boolean = false
+        time: LocalDateTime
     ): Comment
 
     @Mappings(value = [
-        Mapping(source = "created", target = "created", dateFormat = "yyyy-MM-dd HH:mm:ss"),
-        Mapping(source = "updated", target = "updated", dateFormat = "yyyy-MM-dd HH:mm:ss")
+        Mapping(target = "created", dateFormat = "yyyy-MM-dd HH:mm:ss"),
+        Mapping(target = "updated", dateFormat = "yyyy-MM-dd HH:mm:ss")
     ])
     fun toInfoVO(comment: Comment?): CommentInfoVO?
 
     @Mappings(value = [
-        Mapping(source = "created", target = "created", dateFormat = "yyyy-MM-dd HH:mm:ss"),
-        Mapping(source = "updated", target = "updated", dateFormat = "yyyy-MM-dd HH:mm:ss")
+        Mapping(target = "created", dateFormat = "yyyy-MM-dd HH:mm:ss"),
+        Mapping(target = "updated", dateFormat = "yyyy-MM-dd HH:mm:ss")
     ])
-    fun toVO(comment: Comment): CommentVO
+    fun toVO(comment: Comment, replies: List<CommentVO> = listOf()): CommentVO
 }
