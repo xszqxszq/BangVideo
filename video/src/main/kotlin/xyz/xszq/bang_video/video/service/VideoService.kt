@@ -3,6 +3,7 @@ package xyz.xszq.bang_video.video.service
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
+import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import xyz.xszq.bang_video.common.vo.VideoVO
@@ -10,14 +11,17 @@ import xyz.xszq.bang_video.video.dto.VideoDTO
 import xyz.xszq.bang_video.video.entity.Video
 import xyz.xszq.bang_video.video.mapper.VideoMapper
 import xyz.xszq.bang_video.video.repository.VideoRepository
+import xyz.xszq.bang_video.video.repository.VideoSourceRepository
 import java.time.LocalDateTime
 
 @Service
 class VideoService(
     private val videoRepository: VideoRepository,
+    private val sourceRepository: VideoSourceRepository,
     private val generator: VideoIdGeneratorService,
     private val mapper: VideoMapper,
-    private val mongoTemplate: MongoTemplate
+    private val mongoTemplate: MongoTemplate,
+    private val redisTemplate: StringRedisTemplate
 ) {
     fun create(
         dto: VideoDTO,
@@ -25,10 +29,14 @@ class VideoService(
     ): VideoVO? {
         val videoId = generator.generateVideoId()
         val time = LocalDateTime.now()
-        // TODO: get duration from video upload service
-        val duration = 1
+        val source = sourceRepository.findByIdAndSucceededTrue(dto.cid)
+            ?: throw Exception("NotFound")
+        val duration = source.duration
         val video = mapper.fromDTO(dto, videoId, userId, duration, time)
+
         videoRepository.save(video)
+        redisTemplate.opsForSet().add("video:ids", videoId.toString())
+
         return mapper.toVO(video)
     }
     fun profile(
@@ -52,8 +60,9 @@ class VideoService(
             throw Exception("NotOwner")
 
         mapper.update(dto, video)
-        // TODO: NEED TO GET FROM VIDEO UPLOAD SERVICE
-        val duration = 1
+        val source = sourceRepository.findByIdAndSucceededTrue(dto.cid)
+            ?: throw Exception("NotFound")
+        val duration = source.duration
         video.duration = duration
         video.updated = LocalDateTime.now()
 
@@ -114,5 +123,17 @@ class VideoService(
     }
     fun batch(list: List<Long>): List<VideoVO> {
         return videoRepository.findAllByIdIn(list).mapNotNull { mapper.toVO(it) }
+    }
+    fun updateViews(list: List<Pair<Long, Long>>) = list.forEach { (id, views) ->
+        videoRepository.findByIdOrNull(id) ?.let { video ->
+            video.views += views
+            videoRepository.save(video)
+        }
+    }
+    fun updateLikes(list: List<Pair<Long, Long>>) = list.forEach { (id, likes) ->
+        videoRepository.findByIdOrNull(id) ?.let { video ->
+            video.likes = likes
+            videoRepository.save(video)
+        }
     }
 }

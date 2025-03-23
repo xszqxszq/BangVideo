@@ -4,12 +4,13 @@ import org.mapstruct.Mapper
 import org.mapstruct.Mapping
 import org.mapstruct.MappingTarget
 import org.mapstruct.Mappings
+import org.mapstruct.ReportingPolicy
+import xyz.xszq.bang_video.common.vo.VideoVO
 import xyz.xszq.bang_video.video.dto.VideoDTO
 import xyz.xszq.bang_video.video.entity.Video
-import xyz.xszq.bang_video.common.vo.VideoVO
 import java.time.LocalDateTime
 
-@Mapper
+@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE)
 interface VideoMapper {
     @Mappings(value = [
         Mapping(target = "id", source = "videoId"),

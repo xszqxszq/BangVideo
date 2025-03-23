@@ -17,11 +17,13 @@ class VideoSourceService(
             VideoSource(
                 id = result.cid,
                 succeeded = true,
+                duration = result.duration,
                 resolutions = result.resolutions
             )
         } ?: VideoSource(
             id = cid,
             succeeded = false,
+            duration = 0,
             resolutions = emptyList()
         )
         repository.save(source)

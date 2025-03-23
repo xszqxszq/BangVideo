@@ -6,5 +6,6 @@ import org.springframework.data.mongodb.core.mapping.Document
 data class VideoSource(
     val id: Long,
     val succeeded: Boolean,
+    val duration: Int,
     val resolutions: List<Int>
 )

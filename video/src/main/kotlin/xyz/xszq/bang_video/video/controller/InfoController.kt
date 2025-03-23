@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import xyz.xszq.bang_video.common.action
-import xyz.xszq.bang_video.video.service.VideoService
 import xyz.xszq.bang_video.common.vo.VideoVO
+import xyz.xszq.bang_video.video.service.VideoService
 
 @RestController
 @RequestMapping("/info")
