@@ -21,3 +21,8 @@ spring:
     listener:
       simple:
         prefetch: 1
+  elasticsearch:
+    # noinspection HttpUrlsUsage
+    uris: http://${ELASTICSEARCH_HOST:localhost}:${ELASTICSEARCH_PORT:9200}
+    username: ${ELASTICSEARCH_USERNAME:video}
+    password: ${ELASTICSEARCH_PASSWORD:kkskkksk}

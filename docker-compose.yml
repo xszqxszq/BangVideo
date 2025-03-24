@@ -67,6 +67,21 @@ services:
       - "5672:5672"
       - "15672:15672"
 
+  elasticsearch:
+    networks:
+      - bang-video
+    image: elasticsearch:8.17.3
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - xpack.security.http.ssl.enabled=false
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+      - es_plugins:/usr/share/elasticsearch/plugins
+
   gateway:
     networks:
       - bang-video
@@ -119,6 +134,10 @@ services:
       - MONGODB_PASSWORD=password
       - RABBITMQ_HOST=rabbitmq
       - RABBITMQ_PORT=5672
+      - ELASTICSEARCH_HOST=elasticsearch
+      - ELASTICSEARCH_PORT=9200
+      - ELASTICSEARCH_USERNAME=video
+      - ELASTICSEARCH_PASSWORD=kkskkksk
       - STATIC_SERVER=http://localhost:7002
       - SPRING_AMQP_DESERIALIZATION_TRUST_ALL=true
     depends_on:
@@ -154,7 +173,7 @@ services:
       context: ./file
       dockerfile: Dockerfile
     environment:
-      - SERVER_PORT=8004
+      - SERVER_PORT=8005
       - NACOS_SERVER=nacos:8848
       - REDIS_HOST=redis
       - REDIS_PORT=6379
@@ -195,6 +214,8 @@ volumes:
   redis_data:
   mongodb_data:
   mariadb_data:
+  es_data:
+  es_plugins:
   statics:
 
 networks:

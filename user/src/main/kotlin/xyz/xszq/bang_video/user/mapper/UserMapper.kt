@@ -1,10 +1,6 @@
 package xyz.xszq.bang_video.user.mapper
 
-import org.mapstruct.Mapper
-import org.mapstruct.Mapping
-import org.mapstruct.Mappings
-import org.mapstruct.Named
-import org.mapstruct.ReportingPolicy
+import org.mapstruct.*
 import xyz.xszq.bang_video.user.dto.UserCreateDTO
 import xyz.xszq.bang_video.user.entity.User
 import xyz.xszq.bang_video.user.vo.UserDetailedVO

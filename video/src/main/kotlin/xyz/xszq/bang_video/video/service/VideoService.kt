@@ -1,5 +1,6 @@
 package xyz.xszq.bang_video.video.service
 
+import co.elastic.clients.elasticsearch._types.query_dsl.QueryBuilders
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
@@ -9,8 +10,10 @@ import org.springframework.stereotype.Service
 import xyz.xszq.bang_video.common.vo.VideoVO
 import xyz.xszq.bang_video.video.dto.VideoDTO
 import xyz.xszq.bang_video.video.entity.Video
+import xyz.xszq.bang_video.video.entity.VideoSearch
 import xyz.xszq.bang_video.video.mapper.VideoMapper
 import xyz.xszq.bang_video.video.repository.VideoRepository
+import xyz.xszq.bang_video.video.repository.VideoSearchRepository
 import xyz.xszq.bang_video.video.repository.VideoSourceRepository
 import java.time.LocalDateTime
 
@@ -18,6 +21,7 @@ import java.time.LocalDateTime
 class VideoService(
     private val videoRepository: VideoRepository,
     private val sourceRepository: VideoSourceRepository,
+    private val searchRepository: VideoSearchRepository,
     private val generator: VideoIdGeneratorService,
     private val mapper: VideoMapper,
     private val mongoTemplate: MongoTemplate,
@@ -36,6 +40,14 @@ class VideoService(
 
         videoRepository.save(video)
         redisTemplate.opsForSet().add("video:ids", videoId.toString())
+        searchRepository.save(
+            VideoSearch(
+                id = videoId,
+                title = video.title,
+                description = video.description,
+                tags = video.tags,
+            )
+        )
 
         return mapper.toVO(video)
     }
@@ -81,6 +93,8 @@ class VideoService(
 
         video.deleted = true
         videoRepository.save(video)
+        // TODO: set deleted
+        searchRepository.deleteById(id)
     }
     fun findById(id: Long): VideoVO? {
         return videoRepository.findByIdOrNull(id)?.let {
@@ -120,6 +134,16 @@ class VideoService(
             Video::class.java
         ).mapNotNull { mapper.toVO(it) }
         return videos
+    }
+    fun search(keyword: String): List<VideoVO> {
+        QueryBuilders
+            .multiMatch()
+            .query(keyword)
+            .fields("title", "description", "tags")
+            .build()
+        return videoRepository
+            .findAllByIdIn(searchRepository.search(keyword).map { it.id })
+            .mapNotNull { mapper.toVO(it) }
     }
     fun batch(list: List<Long>): List<VideoVO> {
         return videoRepository.findAllByIdIn(list).mapNotNull { mapper.toVO(it) }
