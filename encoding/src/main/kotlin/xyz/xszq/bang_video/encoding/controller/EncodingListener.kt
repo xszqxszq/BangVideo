@@ -49,6 +49,10 @@ class EncodingListener(
 
         val width = videoStream.width ?: return
         val height = videoStream.height ?: return
+        val fps = videoStream.avgFrameRate ?.let { fps ->
+            val (a, b) = fps.split("/")
+            a.toDouble() / b.toDouble()
+        } ?: return
 
         val resolutions = service.list().mapNotNull { resolution ->
             if (resolution.height > 480) {
@@ -74,7 +78,10 @@ class EncodingListener(
 
         pre.delete()
         rabbitTemplate.convertAndSend("encoding.finished",
-            EncodingResult(cid, duration.roundToInt(), resolutions)
+            EncodingResult(cid, duration.roundToInt(), fps, resolutions)
+        )
+        rabbitTemplate.convertAndSend("video.audit",
+            cid
         )
     }
 }

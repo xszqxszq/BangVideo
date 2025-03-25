@@ -83,3 +83,15 @@ fun getIP(request: HttpServletRequest): String {
         }
     } ?: request.remoteAddr
 }
+fun Int.toTime(): String {
+    var now = this
+    val hours = now / 3600
+    now = now % 3600
+    val minutes = now / 60
+    val seconds = now % 60
+
+    return if (hours != 0)
+        "%d:%02d:%02d".format(hours, minutes, seconds)
+    else
+        "%02d:%02d".format(minutes, seconds)
+}

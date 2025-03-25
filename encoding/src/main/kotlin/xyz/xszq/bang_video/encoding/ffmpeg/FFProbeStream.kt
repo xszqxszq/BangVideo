@@ -11,7 +11,9 @@ data class FFProbeStream(
     @SerialName("codec_type")
     val codecType: String,
     val width: Int? = null,
-    val height: Int? = null
+    val height: Int? = null,
+    @SerialName("avg_frame_rate")
+    val avgFrameRate: String? = null,
 )
 
 

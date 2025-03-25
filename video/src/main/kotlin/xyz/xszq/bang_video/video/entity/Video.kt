@@ -27,6 +27,8 @@ data class Video(
     var favorites: Long = 0,
     var deleted: Boolean = false,
     var published: Boolean = false,
+    var auditPassed: Boolean? = null,
+    var auditMessage: String? = null,
     var created: LocalDateTime = LocalDateTime.now(),
     var updated: LocalDateTime = LocalDateTime.now()
 )

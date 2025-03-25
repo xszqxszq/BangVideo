@@ -17,5 +17,7 @@ data class VideoVO(
     val likes: Long,
     val favorites: Long,
     val created: LocalDateTime,
-    val updated: LocalDateTime
+    val updated: LocalDateTime,
+    val auditPassed: Boolean? = null,
+    val auditMessage: String? = null,
 ): Serializable

@@ -210,6 +210,19 @@ services:
     volumes:
       - statics:/static
 
+  audit-video:
+    networks:
+      - bang-video
+    build:
+      context: ./audit-video
+      dockerfile: Dockerfile
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+    volumes:
+      - statics:/static
+      - ./audit-video:/app
+
 volumes:
   redis_data:
   mongodb_data:

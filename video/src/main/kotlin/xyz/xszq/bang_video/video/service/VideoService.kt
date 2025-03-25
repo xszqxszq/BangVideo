@@ -6,8 +6,11 @@ import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.data.repository.findByIdOrNull
+import org.springframework.integration.support.locks.LockRegistry
 import org.springframework.stereotype.Service
+import xyz.xszq.bang_video.common.toTime
 import xyz.xszq.bang_video.common.vo.VideoVO
+import xyz.xszq.bang_video.video.dto.AuditDTO
 import xyz.xszq.bang_video.video.dto.VideoDTO
 import xyz.xszq.bang_video.video.entity.Video
 import xyz.xszq.bang_video.video.entity.VideoSearch
@@ -16,6 +19,7 @@ import xyz.xszq.bang_video.video.repository.VideoRepository
 import xyz.xszq.bang_video.video.repository.VideoSearchRepository
 import xyz.xszq.bang_video.video.repository.VideoSourceRepository
 import java.time.LocalDateTime
+import kotlin.math.roundToInt
 
 @Service
 class VideoService(
@@ -25,7 +29,8 @@ class VideoService(
     private val generator: VideoIdGeneratorService,
     private val mapper: VideoMapper,
     private val mongoTemplate: MongoTemplate,
-    private val redisTemplate: StringRedisTemplate
+    private val redisTemplate: StringRedisTemplate,
+    private val lockRegistry: LockRegistry
 ) {
     fun create(
         dto: VideoDTO,
@@ -33,7 +38,7 @@ class VideoService(
     ): VideoVO? {
         val videoId = generator.generateVideoId()
         val time = LocalDateTime.now()
-        val source = sourceRepository.findByIdAndSucceededTrue(dto.cid)
+        val source = sourceRepository.findByIdOrNull(dto.cid)
             ?: throw Exception("NotFound")
         val duration = source.duration
         val video = mapper.fromDTO(dto, videoId, userId, duration, time)
@@ -125,12 +130,17 @@ class VideoService(
         ).mapNotNull { mapper.toVO(it) }
         return videos
     }
-    fun findByUser(userId: Long): List<VideoVO> {
+    fun findByUser(userId: Long, requirePublished: Boolean = true): List<VideoVO> {
         val videos = mongoTemplate.find(
             Query.query(Criteria
                 .where("userId").`is`(userId)
                 .and("deleted").`is`(false)
-                .and("published").`is`(true)),
+                .let {
+                    if (requirePublished)
+                        it.and("published").`is`(true)
+                    else
+                        it
+                }),
             Video::class.java
         ).mapNotNull { mapper.toVO(it) }
         return videos
@@ -159,5 +169,49 @@ class VideoService(
             video.likes = likes
             videoRepository.save(video)
         }
+    }
+    fun updateAuditCID(audit: AuditDTO) {
+        val source = sourceRepository.findByIdAndSucceededTrue(audit.cid) ?: return
+        if (audit.pass) {
+            source.auditPassed = true
+            redisTemplate.opsForSet().add("video:audit:passed", audit.cid.toString())
+        } else {
+            source.auditMessage = buildString {
+                append(audit.frames.joinToString("、") { frame ->
+                    (frame / source.fps).roundToInt().toTime()
+                })
+                append("处有不适宜内容，请重新修改")
+            }
+            redisTemplate.opsForSet().add("video:audit:failed", audit.cid.toString())
+        }
+        sourceRepository.save(source)
+    }
+    fun updateAuditVideo() {
+        // TODO: Prevent multiple instances
+        val lock = lockRegistry.obtain("video-audit-lock")
+        if (!lock.tryLock())
+            return
+        kotlin.runCatching {
+            redisTemplate.opsForSet().members("video:audit:passed") ?.let { members ->
+                videoRepository.findAllByCidIn(members.toList().map { it.toLong() }).forEach { video ->
+                    video.published = true
+                    video.auditPassed = true
+                    videoRepository.save(video)
+                    redisTemplate.opsForSet().remove("video:audit:passed", video.cid.toString())
+                }
+            }
+            redisTemplate.opsForSet().members("video:audit:failed") ?.let { members ->
+                videoRepository.findAllByCidIn(members.toList().map { it.toLong() }).forEach { video ->
+                    val source = sourceRepository.findByIdAndSucceededTrue(video.cid) ?: return@forEach
+                    video.auditPassed = false
+                    video.auditMessage = source.auditMessage
+                    videoRepository.save(video)
+                    redisTemplate.opsForSet().remove("video:audit:failed", video.cid.toString())
+                }
+            }
+        }.onFailure {
+            it.printStackTrace()
+        }
+        lock.unlock()
     }
 }

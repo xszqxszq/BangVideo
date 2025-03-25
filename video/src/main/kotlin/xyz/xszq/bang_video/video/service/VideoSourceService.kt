@@ -18,24 +18,31 @@ class VideoSourceService(
                 id = result.cid,
                 succeeded = true,
                 duration = result.duration,
+                fps = result.fps,
                 resolutions = result.resolutions
             )
         } ?: VideoSource(
             id = cid,
             succeeded = false,
             duration = 0,
+            fps = 0.0,
             resolutions = emptyList()
         )
         repository.save(source)
     }
     fun get(cid: Long): VideoSourceVO? {
         return repository.findByIdAndSucceededTrue(cid) ?.let { source ->
-            VideoSourceVO(cid, source.resolutions.map { resolution ->
-                ResolutionVO(
-                    id = resolution,
-                    url = "$static/video/$cid/$resolution.mp4"
-                )
-            })
+            VideoSourceVO(
+                id = cid,
+                duration = source.duration,
+                fps = source.fps,
+                resolutions = source.resolutions.map { resolution ->
+                    ResolutionVO(
+                        id = resolution,
+                        url = "$static/video/$cid/$resolution.mp4"
+                    )},
+                auditMessage = source.auditMessage
+            )
         } ?: throw Exception("NotFound")
     }
 }

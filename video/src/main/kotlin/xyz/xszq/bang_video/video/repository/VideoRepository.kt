@@ -5,4 +5,5 @@ import xyz.xszq.bang_video.video.entity.Video
 
 interface VideoRepository: MongoRepository<Video, Long> {
     fun findAllByIdIn(ids: List<Long>): List<Video>
+    fun findAllByCidIn(cids: List<Long>): List<Video>
 }

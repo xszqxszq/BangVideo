@@ -13,6 +13,13 @@ import xyz.xszq.bang_video.video.service.VideoService
 class ProfileController(
     private val videoService: VideoService
 ) {
+    @GetMapping("/")
+    fun list(
+        request: HttpServletRequest,
+    ): ResponseEntity<List<VideoVO>?> =
+        withUser(request) { userId ->
+            videoService.findByUser(userId, false)
+        }
     @PostMapping("/")
     fun create(
         @RequestBody
