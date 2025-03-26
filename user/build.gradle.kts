@@ -3,7 +3,6 @@ val springCloudVersion: String by rootProject.extra
 plugins {
     kotlin("jvm")
     kotlin("kapt")
-    kotlin("plugin.jpa")
     kotlin("plugin.spring")
     id("org.springframework.boot") version "3.4.3"
     id("io.spring.dependency-management")
@@ -25,11 +24,10 @@ repositories {
 dependencies {
     kapt("org.mapstruct:mapstruct-processor:1.5.5.Final")
     implementation(project(":common"))
-    runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
     implementation("com.alibaba.cloud:spring-cloud-starter-alibaba-nacos-discovery")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.mapstruct:mapstruct:1.5.5.Final")
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.cloud:spring-cloud-starter")

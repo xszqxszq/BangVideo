@@ -36,28 +36,17 @@ services:
     volumes:
       - mongodb_data:/data/db
 
-  mariadb:
-    networks:
-      - bang-video
-    image: mariadb:10.11
-    environment:
-      - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_DATABASE=bang_video
-    command: [ '--bind-address=0.0.0.0' ]
-    ports:
-      - "3306:3306"
-    volumes:
-      - mariadb_data:/var/lib/mysql
-
   nginx:
     networks:
       - bang-video
-    image: nginx:1.27.4
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    image: localhost:5000/bang-video/nginx:latest
     ports:
       - "7002:80"
     volumes:
       - statics:/usr/share/nginx/html
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
 
   rabbitmq:
     networks:
@@ -66,6 +55,18 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "curl",
+          "-f",
+          "http://guest:guest@localhost:15672/api/healthchecks/node"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   elasticsearch:
     networks:
@@ -88,6 +89,7 @@ services:
     build:
       context: ./gateway
       dockerfile: Dockerfile
+    image: localhost:5000/bang-video/gateway:latest
     ports:
       - "7001:7001"
     environment:
@@ -103,15 +105,18 @@ services:
     build:
       context: ./user
       dockerfile: Dockerfile
+    image: localhost:5000/bang-video/user:latest
+    ports:
+      - "8001:8001"
     environment:
       - SERVER_PORT=8001
       - NACOS_SERVER=nacos:8848
       - REDIS_HOST=redis
       - REDIS_PORT=6379
-      - MARIADB_HOST=mariadb
-      - MARIADB_PORT=3306
-      - MARIADB_USER=root
-      - MARIADB_PASSWORD=root
+      - MONGODB_HOST=mongodb
+      - MONGODB_PORT=27017
+      - MONGODB_USER=root
+      - MONGODB_PASSWORD=password
       - STATIC_SERVER=http://localhost:7002
     depends_on:
       nacos:
@@ -123,6 +128,9 @@ services:
     build:
       context: ./video
       dockerfile: Dockerfile
+    image: localhost:5000/bang-video/video:latest
+    ports:
+      - "8002:8002"
     environment:
       - SERVER_PORT=8002
       - NACOS_SERVER=nacos:8848
@@ -150,6 +158,9 @@ services:
     build:
       context: ./community
       dockerfile: Dockerfile
+    image: localhost:5000/bang-video/community:latest
+    ports:
+      - "8003:8003"
     environment:
       - SERVER_PORT=8003
       - NACOS_SERVER=nacos:8848
@@ -172,8 +183,11 @@ services:
     build:
       context: ./file
       dockerfile: Dockerfile
+    image: localhost:5000/bang-video/file:latest
+    ports:
+      - "8004:8004"
     environment:
-      - SERVER_PORT=8005
+      - SERVER_PORT=8004
       - NACOS_SERVER=nacos:8848
       - REDIS_HOST=redis
       - REDIS_PORT=6379
@@ -192,8 +206,11 @@ services:
     build:
       context: ./encoding
       dockerfile: Dockerfile
+    image: localhost:5000/bang-video/encoding:latest
+    ports:
+      - "8005:8005"
     environment:
-      - SERVER_PORT=8004
+      - SERVER_PORT=8005
       - NACOS_SERVER=nacos:8848
       - REDIS_HOST=redis
       - REDIS_PORT=6379
@@ -216,17 +233,21 @@ services:
     build:
       context: ./audit-video
       dockerfile: Dockerfile
+    image: localhost:5000/bang-video/audit-video:latest
+    ports:
+      - "8006:8006"
     environment:
       - RABBITMQ_HOST=rabbitmq
       - RABBITMQ_PORT=5672
+    depends_on:
+      nacos:
+        condition: service_healthy
     volumes:
       - statics:/static
-      - ./audit-video:/app
 
 volumes:
   redis_data:
   mongodb_data:
-  mariadb_data:
   es_data:
   es_plugins:
   statics:

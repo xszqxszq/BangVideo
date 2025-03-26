@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: D:\bin\kompose.exe convert -o .\kubernetes\
+    kompose.version: 1.35.0 (9532ceef3)
+  labels:
+    io.kompose.service: audit-video
+  name: audit-video
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: audit-video
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: D:\bin\kompose.exe convert -o .\kubernetes\
+        kompose.version: 1.35.0 (9532ceef3)
+      labels:
+        io.kompose.service: audit-video
+    spec:
+      containers:
+        - env:
+            - name: RABBITMQ_HOST
+              value: rabbitmq
+            - name: RABBITMQ_PORT
+              value: "5672"
+          image: localhost:5000/bang-video/audit-video:latest
+          name: audit-video
+          ports:
+            - containerPort: 8006
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /static
+              name: statics
+      initContainers:
+        - name: wait
+          image: curlimages/curl
+          command: [ 'sh', '-c', 'until curl -s http://nacos:8848/nacos/health; do sleep 2; done' ]
+      restartPolicy: Always
+      volumes:
+        - name: statics
+          persistentVolumeClaim:
+            claimName: statics

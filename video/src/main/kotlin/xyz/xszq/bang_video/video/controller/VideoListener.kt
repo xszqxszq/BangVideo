@@ -32,9 +32,4 @@ class VideoListener(
     fun updateAudit(audit: AuditDTO) {
         service.updateAuditCID(audit)
     }
-    // TODO: Ensure only one instance executes this operation
-    @Scheduled(cron = "0 * * * * *")
-    fun countViews() {
-        service.updateAuditVideo()
-    }
 }

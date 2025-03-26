@@ -29,9 +29,9 @@ abstract class UserMapper {
     ])
     abstract fun fromDTO(
         id: Long,
-        password: String,
         time: LocalDateTime,
-        dto: UserCreateDTO
+        dto: UserCreateDTO,
+        avatar: String = "",
     ): User
 
     @Named("avatarUrl")

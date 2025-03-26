@@ -1,6 +1,5 @@
 package xyz.xszq.bang_video.user.service
 
-import jakarta.transaction.Transactional
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
@@ -22,25 +21,22 @@ class UserService(
 ) {
     private val encoder = BCryptPasswordEncoder()
     @OptIn(ExperimentalStdlibApi::class)
-    @Transactional
     fun createUser(
         dto: UserCreateDTO,
     ): UserVO? {
         // TODO: Username/Nickname/Email Duplication check
+        dto.password = encoder.encode(dto.password)
         val user = mapper.fromDTO(
             id = userIdGenerator.generateUserId(),
-            password = encoder.encode(dto.password),
             time = LocalDateTime.now(),
             dto = dto
         )
         repository.save(user)
         return mapper.toVO(user)
     }
-    @Transactional
     fun getUserById(
         id: Long,
     ): UserVO? = mapper.toVO(repository.findByIdOrNull(id))
-    @Transactional
     fun getUserByNickname(
         nickname: String,
     ): UserVO? = mapper.toVO(repository.findByNicknameAndDeletedFalse(nickname))
@@ -48,7 +44,6 @@ class UserService(
         val user = repository.findByIdOrNull(userId)?: return false
         return user.password == password
     }
-    @Transactional
     fun authenticate(
         request: UserLoginDTO
     ): User? {
@@ -61,11 +56,9 @@ class UserService(
             null
     }
 
-    @Transactional
     fun profile(
         id: Long,
     ): UserDetailedVO? = mapper.toDetailedVO(repository.findByIdOrNull(id))
-    @Transactional
     fun update(userId: Long, dto: UserUpdateDTO): UserDetailedVO? {
         val user = repository.findByIdOrNull(userId)
             ?: throw Exception("NotFound")
@@ -94,7 +87,6 @@ class UserService(
         repository.save(user)
         return mapper.toDetailedVO(user)
     }
-    @Transactional
     fun delete(userId: Long) {
         val user = repository.findByIdOrNull(userId)
             ?: throw Exception("NotFound")

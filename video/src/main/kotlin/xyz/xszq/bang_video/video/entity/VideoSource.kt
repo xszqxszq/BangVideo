@@ -8,7 +8,5 @@ data class VideoSource(
     val succeeded: Boolean,
     val duration: Int,
     val fps: Double,
-    val resolutions: List<Int>,
-    var auditPassed: Boolean = false,
-    var auditMessage: String? = null,
+    val resolutions: List<Int>
 )

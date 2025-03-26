@@ -16,9 +16,11 @@ class InteractionService(
         redisTemplate.opsForSet().add("video:views:$videoId", key)
     }
     fun like(videoId: Long, userId: Long) {
+        redisTemplate.opsForSet().add("video:ids", videoId.toString())
         redisTemplate.opsForSet().add("video:likes:$videoId", userId.toString())
     }
     fun dislike(videoId: Long, userId: Long) {
+        redisTemplate.opsForSet().add("video:ids", videoId.toString())
         redisTemplate.opsForSet().remove("video:likes:$videoId", userId.toString())
     }
     fun getVideos(): Set<String> {
@@ -49,6 +51,9 @@ class InteractionService(
             rabbit.convertAndSend("video.views", videos)
 
             redisTemplate.delete(videos.map { "video:views:${it.first}" })
+            redisTemplate.opsForSet().remove("video:ids", videos.map {
+                it.first
+            })
         }
         lock.unlock()
     }
@@ -69,6 +74,9 @@ class InteractionService(
             }
         }.chunked(shardLength).forEach { videos ->
             rabbit.convertAndSend("video.likes", videos)
+            redisTemplate.opsForSet().remove("video:ids", videos.map {
+                it.first
+            })
         }
         lock.unlock()
     }

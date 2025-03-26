@@ -7,12 +7,9 @@ spring:
     nacos:
       discovery:
         server-addr: ${NACOS_SERVER:localhost:8848}
-  datasource:
-    url: jdbc:mariadb://${MARIADB_HOST:mariadb}:${MARIADB_PORT:3306}/bang_video
-    username: ${MARIADB_USER:root}
-    password: ${MARIADB_PASSWORD:root}
-    driver-class-name: org.mariadb.jdbc.Driver
   data:
     redis:
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
+    mongodb:
+      uri: mongodb://${MONGODB_USER:root}:${MONGODB_PASSWORD:password}@${MONGODB_HOST:localhost}:${MONGODB_PORT:27017}/BangVideo?authSource=admin

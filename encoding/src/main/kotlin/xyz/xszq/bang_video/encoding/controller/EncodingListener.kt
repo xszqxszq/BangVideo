@@ -6,6 +6,7 @@ import org.springframework.amqp.rabbit.annotation.Queue
 import org.springframework.amqp.rabbit.annotation.RabbitListener
 import org.springframework.amqp.rabbit.core.RabbitTemplate
 import org.springframework.stereotype.Component
+import xyz.xszq.bang_video.common.dto.VideoWithCID
 import xyz.xszq.bang_video.common.dto.EncodingResult
 import xyz.xszq.bang_video.encoding.ffmpeg.FFMpegFileType
 import xyz.xszq.bang_video.encoding.ffmpeg.FFMpegTask
@@ -21,15 +22,16 @@ class EncodingListener(
 ) {
     private val video = Path("/static/video")
     private val tempDir = video.resolve("temp")
-    @RabbitListener(queuesToDeclare = [Queue("encoding.queue")])
+    @RabbitListener(queuesToDeclare = [Queue("video.encoding.queue")])
     fun handle(
-        cid: Long,
+        request: VideoWithCID,
         channel: Channel,
         message: Message
     ) {
         channel.basicAck(message.messageProperties.deliveryTag, false)
-        val pre = tempDir.resolve(cid.toString()).toFile()
-        val saveDir = video.resolve(cid.toString()).toFile().also {
+        println("Encoding ${request.id} (CID=${request.cid})...")
+        val pre = tempDir.resolve(request.cid.toString()).toFile()
+        val saveDir = video.resolve(request.cid.toString()).toFile().also {
             it.mkdir()
         }
         var duration = 0.0
@@ -42,7 +44,7 @@ class EncodingListener(
                 info.streams ?.firstOrNull { it.codecType == "video" }
             }
         }.getOrNull() ?: run {
-            rabbitTemplate.convertAndSend("encoding.failed", cid)
+            rabbitTemplate.convertAndSend("video.encoding.failed", request.cid)
             pre.delete()
             return
         }
@@ -77,11 +79,10 @@ class EncodingListener(
         }
 
         pre.delete()
-        rabbitTemplate.convertAndSend("encoding.finished",
-            EncodingResult(cid, duration.roundToInt(), fps, resolutions)
+        rabbitTemplate.convertAndSend("video.encoding.finished",
+            EncodingResult(request.cid, duration.roundToInt(), fps, resolutions)
         )
-        rabbitTemplate.convertAndSend("video.audit",
-            cid
-        )
+        rabbitTemplate.convertAndSend("video.audit.queue", request)
+        println("Encoding ${request.id} (CID=${request.cid}) finished.")
     }
 }

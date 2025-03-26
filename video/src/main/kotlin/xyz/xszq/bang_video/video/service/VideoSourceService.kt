@@ -40,8 +40,7 @@ class VideoSourceService(
                     ResolutionVO(
                         id = resolution,
                         url = "$static/video/$cid/$resolution.mp4"
-                    )},
-                auditMessage = source.auditMessage
+                    )}
             )
         } ?: throw Exception("NotFound")
     }

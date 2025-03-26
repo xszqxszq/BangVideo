@@ -3,7 +3,6 @@ val springCloudVersion: String by rootProject.extra
 plugins {
     kotlin("jvm")
     kotlin("kapt")
-    kotlin("plugin.jpa")
     kotlin("plugin.spring")
     id("org.springframework.boot") version "3.4.3"
     id("io.spring.dependency-management")

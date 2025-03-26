@@ -10,16 +10,18 @@ import xyz.xszq.bang_video.video.service.VideoSourceService
 class EncodingListener(
     private val service: VideoSourceService
 ) {
-    @RabbitListener(queuesToDeclare = [Queue("encoding.finished")])
+    @RabbitListener(queuesToDeclare = [Queue("video.encoding.finished")])
     fun succeeded(
         result: EncodingResult
     ) {
+        println("Encode ${result.cid} succeeded.")
         service.add(result.cid, result)
     }
-    @RabbitListener(queuesToDeclare = [Queue("encoding.failed")])
+    @RabbitListener(queuesToDeclare = [Queue("video.encoding.failed")])
     fun failed(
         cid: Long
     ) {
+        println("Encode $cid failed.")
         service.add(cid, null)
     }
 }

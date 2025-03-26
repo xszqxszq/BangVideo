@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: D:\bin\kompose.exe convert -o .\kubernetes\
+    kompose.version: 1.35.0 (9532ceef3)
+  labels:
+    io.kompose.service: nginx
+  name: nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: nginx
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: D:\bin\kompose.exe convert -o .\kubernetes\
+        kompose.version: 1.35.0 (9532ceef3)
+      labels:
+        io.kompose.service: nginx
+    spec:
+      containers:
+        - image: localhost:5000/bang-video/nginx:latest
+          name: nginx
+          ports:
+            - containerPort: 80
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /usr/share/nginx/html
+              name: statics
+      restartPolicy: Always
+      volumes:
+        - name: statics
+          persistentVolumeClaim:
+            claimName: statics

@@ -1,13 +1,10 @@
 package xyz.xszq.bang_video.user.entity
 
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.Id
-import jakarta.persistence.Table
+import org.springframework.data.annotation.Id
+import org.springframework.data.mongodb.core.mapping.Document
 import java.time.LocalDateTime
 
-@Entity
-@Table(name = "user")
+@Document("user")
 data class User(
     @Id
     val id: Long,
@@ -15,14 +12,8 @@ data class User(
     var password: String,
     var email: String,
     var nickname: String,
-    var avatar: String,
-    @Column(
-        columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
-    )
+    var avatar: String = "",
     var created: LocalDateTime,
-    @Column(
-        columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"
-    )
     var updated: LocalDateTime,
-    var deleted: Boolean
+    var deleted: Boolean = false
 )

@@ -1,5 +1,5 @@
 package xyz.xszq.bang_video.file.vo
 
-data class AvatarVO(
+data class ImageVO(
     val id: String
 )
