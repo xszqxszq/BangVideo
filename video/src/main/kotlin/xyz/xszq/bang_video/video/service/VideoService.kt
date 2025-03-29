@@ -122,7 +122,7 @@ class VideoService(
     fun findByUser(userId: Long, requirePublished: Boolean = true): List<VideoVO> {
         val videos = mongoTemplate.find(
             Query.query(Criteria
-                .where("userId").`is`(userId)
+                .where("owner").`is`(userId)
                 .and("deleted").`is`(false)
                 .let {
                     if (requirePublished)

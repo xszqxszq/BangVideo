@@ -65,7 +65,7 @@ def callback(ch, method, properties, body):
     vid = request['id']
     cid = request['cid']
     ch.basic_ack(delivery_tag = method.delivery_tag)
-    result = audit(os.path.join(VIDEO_DIR, str(cid), '480.mp4'))
+    result = audit(os.path.join(VIDEO_DIR, str(cid), '360.mp4'))
     result['id'] = vid
     result['cid'] = cid
     ch.basic_publish(

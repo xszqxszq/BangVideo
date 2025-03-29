@@ -29,6 +29,8 @@ class FFMpegTask(
         fun frameRate(rate: Double) = insert(Argument("framerate", rate.toString()))
         fun vFrames(frames: Int) = insert(Argument("vframes", frames.toString()))
         fun preset(preset: String) = insert(Argument("preset", preset))
+        fun hlsTime(time: Double) = insert(Argument("hls_time", time.toString()))
+        fun hlsSegmentFilename(filename: String) = insert(Argument("hls_segment_filename", filename))
     }
     private fun buildCommand(result: String): List<String> {
         return buildList {

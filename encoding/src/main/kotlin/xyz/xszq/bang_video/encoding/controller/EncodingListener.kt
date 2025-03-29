@@ -56,6 +56,20 @@ class EncodingListener(
             a.toDouble() / b.toDouble()
         } ?: return
 
+        // For Audit
+        val audit = saveDir.resolve("360.mp4")
+        FFMpegTask(FFMpegFileType.MP4) {
+            input(pre.absolutePath)
+            videoFilter(when {
+                width >= height -> "scale=-2:360"
+                else -> "scale=640:-2"
+            })
+            videoCodec("libx264")
+            preset("ultrafast")
+            yes()
+        }.getResult(audit)
+
+        // Encode for each resolution
         val resolutions = service.list().mapNotNull { resolution ->
             if (resolution.height > 480) {
                 if (when {
@@ -64,8 +78,8 @@ class EncodingListener(
                 } > 100)
                     return@mapNotNull null
             }
-            val output = saveDir.resolve("${resolution.id}.mp4")
-            FFMpegTask(FFMpegFileType.MP4) {
+            val output = saveDir.resolve("${resolution.id}.m3u8")
+            FFMpegTask(FFMpegFileType.M3U8) {
                 input(pre.absolutePath)
                 videoFilter(when {
                     width >= height -> "scale=-2:${resolution.height}"
@@ -73,10 +87,27 @@ class EncodingListener(
                 })
                 videoCodec("libx264")
                 preset("ultrafast")
+                hlsTime(2.0)
+                hlsSegmentFilename(saveDir.resolve("${resolution.id}_%d.ts").toString())
+                forceFormat("hls")
                 yes()
             }.getResult(output)
             resolution.id
         }
+
+        // Generate playlist.m3u8
+        saveDir.resolve("playlist.m3u8").writeText(buildString {
+            appendLine("#EXTM3U")
+            var bandwidth = 2000000
+            service.list().forEach { resolution ->
+                appendLine()
+                append("#EXT-X-STREAM-INF:BANDWIDTH=$bandwidth")
+                append(",RESOLUTION=${resolution.width}x${resolution.height}")
+                appendLine()
+                appendLine("${resolution.id}.m3u8")
+                bandwidth *= 2
+            }
+        })
 
         pre.delete()
         rabbitTemplate.convertAndSend("video.encoding.finished",

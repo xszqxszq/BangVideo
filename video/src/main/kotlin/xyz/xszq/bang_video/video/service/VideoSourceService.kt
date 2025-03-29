@@ -39,7 +39,7 @@ class VideoSourceService(
                 resolutions = source.resolutions.map { resolution ->
                     ResolutionVO(
                         id = resolution,
-                        url = "$static/video/$cid/$resolution.mp4"
+                        url = "$static/video/$cid/$resolution.m3u8"
                     )}
             )
         } ?: throw Exception("NotFound")
