@@ -5,7 +5,6 @@ plugins {
     kotlin("plugin.spring")
     id("io.spring.dependency-management")
     id("org.graalvm.buildtools.native")
-    id("org.springframework.boot")
 }
 
 group = "xyz.xszq.bang_video"
@@ -18,14 +17,12 @@ repositories {
 
 dependencies {
     implementation(project(":common"))
+    implementation("com.google.code.gson:gson:2.11.0")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
     implementation("org.springframework.boot:spring-boot-starter-amqp")
     implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
-    testImplementation("org.springframework.amqp:spring-rabbit-test")
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    implementation("org.springframework.boot:spring-boot-starter-web")
 }
 dependencyManagement {
     imports {
@@ -41,4 +38,12 @@ kotlin {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+graalvmNative {
+    binaries {
+        named("main") {
+            buildArgs.add("-O0")
+        }
+    }
 }

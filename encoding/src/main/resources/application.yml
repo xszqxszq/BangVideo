@@ -4,9 +4,6 @@ spring:
   application:
     name: encoding-service
   data:
-    redis:
-      host: ${REDIS_HOST:localhost}
-      port: ${REDIS_PORT:6379}
     mongodb:
       uri: mongodb://${MONGODB_USER:root}:${MONGODB_PASSWORD:password}@${MONGODB_HOST:localhost}:${MONGODB_PORT:27017}/BangVideo?authSource=admin
   rabbitmq:

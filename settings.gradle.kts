@@ -11,9 +11,9 @@ include(
     "eureka",
     "gateway",
     "user",
-//    "video",
-//    "file",
-    "community",
+    "video",
+    "file",
+//    "community",
 //    "encoding",
     "common"
 )

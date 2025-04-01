@@ -65,3 +65,12 @@ allOpen {
 tasks.withType<Test> {
     useJUnitPlatform()
 }
+
+
+graalvmNative {
+    binaries {
+        named("main") {
+            buildArgs.add("-O0")
+        }
+    }
+}

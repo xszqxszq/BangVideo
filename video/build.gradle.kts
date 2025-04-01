@@ -20,6 +20,7 @@ dependencies {
     kapt("org.mapstruct:mapstruct-processor:1.5.5.Final")
     implementation(project(":common"))
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("com.google.code.gson:gson:2.11.0")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.mapstruct:mapstruct:1.5.5.Final")
     implementation("org.springframework.boot:spring-boot-starter-amqp")
@@ -65,4 +66,12 @@ allOpen {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+graalvmNative {
+    binaries {
+        named("main") {
+            buildArgs.add("-O0")
+        }
+    }
 }

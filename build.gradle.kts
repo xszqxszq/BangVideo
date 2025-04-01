@@ -23,7 +23,7 @@ allprojects {
 }
 
 val springbootExcluded = listOf("common")
-val graalVMExcluded = listOf("common", "eureka")
+val graalVMExcluded = listOf("common", "eureka", "gateway", "encoding")
 subprojects {
     group = "xyz.xszq.bang_video"
     version = "0.0.1-SNAPSHOT"
