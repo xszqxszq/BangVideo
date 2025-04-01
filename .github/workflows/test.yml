@@ -18,3 +18,21 @@ jobs:
 
       - name: Gradle plugin
         run: ./gradlew nativeCompile
+
+      - name: Upload result
+        uses: actions/upload-artifact@v2
+        with:
+          name: user
+          path: user/build/native/nativeCompile/*
+
+      - name: Upload result
+        uses: actions/upload-artifact@v2
+        with:
+          name: video
+          path: video/build/native/nativeCompile/*
+
+      - name: Upload result
+        uses: actions/upload-artifact@v2
+        with:
+          name: file
+          path: file/build/native/nativeCompile/*
