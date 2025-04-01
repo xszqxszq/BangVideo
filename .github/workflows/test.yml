@@ -14,4 +14,4 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Gradle plugin
-        run: gradlew nativeCompile
+        run: ./gradlew nativeCompile
