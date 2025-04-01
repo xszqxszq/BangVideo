@@ -1,4 +1,3 @@
-//val alibabaCloudVersion: String by rootProject.extra
 val springCloudVersion: String by rootProject.extra
 plugins {
     kotlin("jvm")
@@ -21,7 +20,6 @@ repositories {
 dependencies {
     kapt("org.mapstruct:mapstruct-processor:1.5.5.Final")
     implementation(project(":common"))
-//    implementation("com.alibaba.cloud:spring-cloud-starter-alibaba-nacos-discovery")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("com.google.code.gson:gson:2.11.0")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -45,7 +43,6 @@ dependencies {
 dependencyManagement {
     imports {
         mavenBom("org.springframework.cloud:spring-cloud-dependencies:$springCloudVersion")
-//        mavenBom("com.alibaba.cloud:spring-cloud-alibaba-dependencies:$alibabaCloudVersion")
     }
 }
 

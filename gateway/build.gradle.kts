@@ -6,6 +6,9 @@ plugins {
     id("org.springframework.boot") version "3.4.3"
 }
 
+group = "xyz.xszq.bang_video"
+version = "0.0.1-SNAPSHOT"
+
 repositories {
     maven("https://maven.aliyun.com/repository/public/")
     mavenCentral()
@@ -17,7 +20,6 @@ dependencies {
     implementation("org.springframework.cloud:spring-cloud-starter")
     implementation("org.springframework.cloud:spring-cloud-starter-gateway")
     implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
-//    implementation("org.springframework.cloud:spring-cloud-starter-loadbalancer")
 }
 
 dependencyManagement {

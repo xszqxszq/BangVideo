@@ -70,7 +70,9 @@ tasks.withType<Test> {
 graalvmNative {
     binaries {
         named("main") {
-            buildArgs.add("-O0")
+            buildArgs.add("-H:ReflectionConfigurationFiles=../../../../reflect-config.json")
+            buildArgs.add("-H:ResourceConfigurationFiles=../../../../resource-config.json")
+            buildArgs.add("-Ob")
         }
     }
 }

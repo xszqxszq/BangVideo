@@ -1,20 +1,4 @@
 services:
-  nacos:
-    networks:
-      - bang-video
-    image: nacos/nacos-server:v2.5.1
-    ports:
-      - "8848:8848"
-      - "9848:9848"
-      - "9849:9849"
-    environment:
-      - MODE=standalone
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8848/nacos/"]
-      interval: 5s
-      timeout: 5s
-      retries: 20
-
   redis:
     networks:
       - bang-video
@@ -36,6 +20,19 @@ services:
     volumes:
       - mongodb_data:/data/db
 
+  rabbitmq:
+    networks:
+      - bang-video
+    image: rabbitmq:4.1-rc
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
   nginx:
     networks:
       - bang-video
@@ -48,26 +45,6 @@ services:
     volumes:
       - statics:/usr/share/nginx/html
 
-  rabbitmq:
-    networks:
-      - bang-video
-    image: rabbitmq:4.1-rc
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    healthcheck:
-      test:
-        [
-          "CMD",
-          "curl",
-          "-f",
-          "http://guest:guest@localhost:15672/api/healthchecks/node"
-        ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
-
   elasticsearch:
     networks:
       - bang-video
@@ -79,9 +56,29 @@ services:
     ports:
       - "9200:9200"
       - "9300:9300"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9200/_cluster/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
     volumes:
       - es_data:/usr/share/elasticsearch/data
       - es_plugins:/usr/share/elasticsearch/plugins
+
+  eureka:
+    networks:
+      - bang-video
+    build:
+      context: ./eureka
+      dockerfile: Dockerfile
+    image: localhost:5000/bang-video/eureka:latest
+    ports:
+      - "7000:7000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7000/"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
 
   gateway:
     networks:
@@ -94,9 +91,10 @@ services:
       - "7001:7001"
     environment:
       - SERVER_PORT=7001
-      - NACOS_SERVER=nacos:8848
+      - EUREKA_HOST=eureka
+      - EUREKA_PORT=7000
     depends_on:
-      nacos:
+      eureka:
         condition: service_healthy
 
   user:
@@ -106,11 +104,10 @@ services:
       context: ./user
       dockerfile: Dockerfile
     image: localhost:5000/bang-video/user:latest
-    ports:
-      - "8001:8001"
     environment:
       - SERVER_PORT=8001
-      - NACOS_SERVER=nacos:8848
+      - EUREKA_HOST=eureka
+      - EUREKA_PORT=7000
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - MONGODB_HOST=mongodb
@@ -121,7 +118,9 @@ services:
       - RABBITMQ_PORT=5672
       - STATIC_SERVER=http://localhost:7002
     depends_on:
-      nacos:
+      eureka:
+        condition: service_healthy
+      rabbitmq:
         condition: service_healthy
 
   video:
@@ -131,11 +130,10 @@ services:
       context: ./video
       dockerfile: Dockerfile
     image: localhost:5000/bang-video/video:latest
-    ports:
-      - "8002:8002"
     environment:
       - SERVER_PORT=8002
-      - NACOS_SERVER=nacos:8848
+      - EUREKA_HOST=eureka
+      - EUREKA_PORT=7000
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - MONGODB_HOST=mongodb
@@ -151,7 +149,11 @@ services:
       - STATIC_SERVER=http://localhost:7002
       - SPRING_AMQP_DESERIALIZATION_TRUST_ALL=true
     depends_on:
-      nacos:
+      eureka:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      elasticsearch:
         condition: service_healthy
 
   community:
@@ -161,11 +163,10 @@ services:
       context: ./community
       dockerfile: Dockerfile
     image: localhost:5000/bang-video/community:latest
-    ports:
-      - "8003:8003"
     environment:
       - SERVER_PORT=8003
-      - NACOS_SERVER=nacos:8848
+      - EUREKA_HOST=eureka
+      - EUREKA_PORT=7000
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - MONGODB_HOST=mongodb
@@ -176,7 +177,9 @@ services:
       - RABBITMQ_PORT=5672
       - SPRING_AMQP_DESERIALIZATION_TRUST_ALL=true
     depends_on:
-      nacos:
+      eureka:
+        condition: service_healthy
+      rabbitmq:
         condition: service_healthy
 
   file:
@@ -186,18 +189,19 @@ services:
       context: ./file
       dockerfile: Dockerfile
     image: localhost:5000/bang-video/file:latest
-    ports:
-      - "8004:8004"
     environment:
       - SERVER_PORT=8004
-      - NACOS_SERVER=nacos:8848
+      - EUREKA_HOST=eureka
+      - EUREKA_PORT=7000
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - RABBITMQ_HOST=rabbitmq
       - RABBITMQ_PORT=5672
       - SPRING_AMQP_DESERIALIZATION_TRUST_ALL=true
     depends_on:
-      nacos:
+      eureka:
+        condition: service_healthy
+      rabbitmq:
         condition: service_healthy
     volumes:
       - statics:/static
@@ -209,11 +213,7 @@ services:
       context: ./encoding
       dockerfile: Dockerfile
     image: localhost:5000/bang-video/encoding:latest
-    ports:
-      - "8005:8005"
     environment:
-      - SERVER_PORT=8005
-      - NACOS_SERVER=nacos:8848
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - MONGODB_HOST=mongodb
@@ -224,7 +224,7 @@ services:
       - RABBITMQ_PORT=5672
       - SPRING_AMQP_DESERIALIZATION_TRUST_ALL=true
     depends_on:
-      nacos:
+      rabbitmq:
         condition: service_healthy
     volumes:
       - statics:/static
@@ -236,13 +236,11 @@ services:
       context: ./audit-video
       dockerfile: Dockerfile
     image: localhost:5000/bang-video/audit-video:latest
-    ports:
-      - "8006:8006"
     environment:
       - RABBITMQ_HOST=rabbitmq
       - RABBITMQ_PORT=5672
     depends_on:
-      nacos:
+      rabbitmq:
         condition: service_healthy
     volumes:
       - statics:/static

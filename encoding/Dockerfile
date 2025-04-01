@@ -10,4 +10,6 @@ WORKDIR /app
 
 COPY build/native/nativeCompile/encoding /app/app
 
+COPY build/native/nativeCompile/*.so /app/
+
 ENTRYPOINT ["/app/app"]

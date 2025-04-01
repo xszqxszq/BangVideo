@@ -13,7 +13,7 @@ include(
     "user",
     "video",
     "file",
-//    "community",
-//    "encoding",
+    "community",
+    "encoding",
     "common"
 )

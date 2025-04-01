@@ -1,6 +1,6 @@
 plugins {
     kotlin("jvm") version "1.9.25"
-    kotlin("kapt") version "1.9.22"
+    kotlin("kapt") version "1.9.22" apply false
     kotlin("plugin.serialization") version "1.9.25" apply false
     kotlin("plugin.spring") version "1.9.25"
     id("io.spring.dependency-management") version "1.1.7"
@@ -19,11 +19,10 @@ repositories {
 allprojects {
     extra["springBootVersion"] = "3.4.3"
     extra["springCloudVersion"] = "2024.0.0"
-    extra["alibabaCloudVersion"] = "2023.0.3.2"
 }
 
 val springbootExcluded = listOf("common")
-val graalVMExcluded = listOf("common", "eureka", "gateway", "encoding")
+val graalVMExcluded = listOf("common", "eureka", "gateway")
 subprojects {
     group = "xyz.xszq.bang_video"
     version = "0.0.1-SNAPSHOT"

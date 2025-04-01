@@ -60,7 +60,7 @@ tasks.withType<Test> {
 graalvmNative {
 	binaries {
 		named("main") {
-			buildArgs.add("-O0")
+			buildArgs.add("-Ob")
 		}
 	}
 }
