@@ -1,4 +1,4 @@
-package xyz.xszq.bang_video.user.vo
+package xyz.xszq.bang_video.common.vo
 
 data class UserVO(
     val id: Long,

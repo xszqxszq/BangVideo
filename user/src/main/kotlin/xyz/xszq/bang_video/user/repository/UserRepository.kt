@@ -9,4 +9,5 @@ interface UserRepository: MongoRepository<User, Long> {
     fun findByUsernameAndDeletedFalse(username: String): User?
     fun findByNicknameAndDeletedFalse(nickname: String): User?
     fun findByEmailAndDeletedFalse(email: String): User?
+    fun findAllByIdIn(ids: List<Long>): List<User>
 }

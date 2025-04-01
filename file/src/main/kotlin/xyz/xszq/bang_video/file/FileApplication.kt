@@ -4,6 +4,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession
 import java.io.File
+import java.util.TimeZone
 
 @EnableRedisHttpSession
 @SpringBootApplication
@@ -19,5 +20,6 @@ fun main(args: Array<String>) {
 	val video = File("/static/video/temp")
 	if (!video.exists())
 		video.mkdirs()
+	TimeZone.setDefault(TimeZone.getTimeZone("Asia/Shanghai"))
 	runApplication<FileApplication>(*args)
 }

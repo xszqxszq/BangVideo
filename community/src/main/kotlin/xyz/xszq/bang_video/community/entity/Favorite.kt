@@ -4,7 +4,7 @@ import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.index.CompoundIndex
 import org.springframework.data.mongodb.core.index.CompoundIndexes
 import org.springframework.data.mongodb.core.mapping.Document
-import java.time.LocalDateTime
+import java.time.Instant
 
 @Document(collection = "favorite")
 @CompoundIndexes(value = [
@@ -16,7 +16,7 @@ data class Favorite(
     val user: Long,
     val name: String,
     val videos: MutableList<Long> = mutableListOf(),
-    val created: LocalDateTime = LocalDateTime.now(),
-    var updated: LocalDateTime = LocalDateTime.now(),
+    val created: Instant = Instant.now(),
+    var updated: Instant = Instant.now(),
     var deleted: Boolean = false
 )

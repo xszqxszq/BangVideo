@@ -5,6 +5,10 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import xyz.xszq.bang_video.common.vo.VideoVO
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+
 
 fun exceptionHandler(throwable: Throwable): HttpStatus =
     when (throwable.message) {
@@ -41,13 +45,11 @@ inline fun <T> withUser(
     return ResponseEntity.ok(result)
 }
 fun RabbitTemplate.getVideoInfo(videoId: Long): VideoVO? {
+    @Suppress("UNCHECKED_CAST")
     val result = convertSendAndReceive(
-        "video.info", videoId
-    )
-    return when (result) {
-        is VideoVO -> result
-        else -> null
-    }
+        "video.info", listOf(videoId)
+    ) as List<VideoVO>
+    return result.firstOrNull()
 }
 inline fun <T> RabbitTemplate.withVideo(
     videoId: Long,
@@ -95,3 +97,5 @@ fun Int.toTime(): String {
     else
         "%02d:%02d".format(minutes, seconds)
 }
+fun Instant.formatTime(): String = atZone(ZoneId.of("Asia/Shanghai"))
+    .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))

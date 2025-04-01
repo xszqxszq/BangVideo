@@ -1,9 +1,9 @@
-FROM alibabadragonwell/dragonwell:21
+FROM debian:bullseye
 
 WORKDIR /app
 
-COPY build/libs/video-0.0.1-SNAPSHOT.jar /app/app.jar
+COPY build/native/nativeCompile/video /app/app
 
 EXPOSE 8002
 
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["/app/app"]

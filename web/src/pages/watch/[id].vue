@@ -3,6 +3,9 @@ import {defineComponent} from 'vue'
 import {VideoPlayer} from '@videojs-player/vue'
 import 'video.js/dist/video-js.css'
 import hlsQualitySelector from 'videojs-hls-quality-selector/src/plugin'
+import video from "@/api/video"
+import comment from "@/api/comment";
+import {useRouter} from "vue-router";
 
 export default defineComponent({
   name: "watch",
@@ -12,6 +15,23 @@ export default defineComponent({
     }
   },
   components: {VideoPlayer},
+  beforeRouteEnter(to, from, next) {
+    let id = to.params.id
+    video.info(id).then(video => {
+      if (video == null) {
+        next("/")
+      } else {
+        next(vm => {
+          vm.video = video
+        })
+      }
+    })
+  },
+  mounted() {
+    comment.get(this.id).then(comments => {
+      this.comments = comments
+    })
+  },
   methods: {
     formatTime(date: string) {
       let time = new Date(date)
@@ -37,46 +57,16 @@ export default defineComponent({
           day: '2-digit'
         })
       return date
+    },
+    like() {
+      console.log(video.like(this.id))
     }
   },
   data() {
     return {
-      video: {
-        id: 1,
-        title: "视频标题",
-        description: "简介",
-        views: 514,
-        likes: 114,
-        cover: "/cover/6f101fcbba6868645554949ef07d07685b1ff830.png",
-        owner: {
-          id: 1,
-          nickname: "UP主",
-          avatar: "https://avatars0.githubusercontent.com/u/9064066?v=4&s=460",
-          watching: 114
-        },
-        created: "2025/1/1 11:45:14"
-      },
-      comments: [{
-        user: {
-          id: 1,
-          nickname: "UP主",
-          avatar: "https://avatars0.githubusercontent.com/u/9064066?v=4&s=460",
-          watching: 114
-        },
-        content: "测试评论\n这是第二行\n这是第三行",
-        created: "2025/3/29 10:34:14",
-        likes: 20
-      },{
-        user: {
-          id: 1,
-          nickname: "UP主",
-          avatar: "https://avatars0.githubusercontent.com/u/9064066?v=4&s=460",
-          watching: 114
-        },
-        content: "测试评论\n这是第二行\n这是第三行",
-        created: "2024/1/20 11:45:14",
-        likes: 20
-      }],
+      id: this.$route.params.id,
+      video: video.empty,
+      comments: [] as Array<Comment>,
       recommends: [{
         id: 1,
         title: "视频标题",
@@ -127,7 +117,7 @@ export default defineComponent({
             class="overflow-hidden d-flex"
           >
             <video-player
-              src="http://localhost:7002/video/6/playlist.m3u8"
+              :src="video.playlist"
               :poster="video.cover"
               :options="options"
               :plugins="{ hlsQualitySelector }"
@@ -150,11 +140,11 @@ export default defineComponent({
                         </v-avatar>
                       </router-link>
                     </v-col>
-                    <v-col>
+                    <v-col v-if="video.owner">
                       <router-link class="link text-black" :to="'/user/'+video.owner.id">
                         <v-card-title class="pa-0 text-body-1">{{ video.owner.nickname }}</v-card-title>
                       </router-link>
-                      <v-card-subtitle class="pa-0 text-caption">{{ video.owner.watching }} 粉丝</v-card-subtitle>
+<!--                      <v-card-subtitle class="pa-0 text-caption">{{ video.owner.watching }} 粉丝</v-card-subtitle>-->
                     </v-col>
                     <v-col cols="auto" class="ml-3">
                       <v-btn color="red" variant="flat" size="small">关注</v-btn>
@@ -167,7 +157,7 @@ export default defineComponent({
                 <v-col cols="5" md="auto">
                   <v-row dense>
                     <v-col cols="auto">
-                      <v-btn variant="text" color="red" prepend-icon="mdi-thumb-up">
+                      <v-btn variant="text" color="red" prepend-icon="mdi-thumb-up" @click="like">
                         <template v-slot:default>
                           <span class="mt-1">{{ video.likes }}</span>
                         </template>

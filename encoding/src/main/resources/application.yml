@@ -3,10 +3,6 @@ server:
 spring:
   application:
     name: encoding-service
-  cloud:
-    nacos:
-      discovery:
-        server-addr: ${NACOS_SERVER:localhost:8848}
   data:
     redis:
       host: ${REDIS_HOST:localhost}

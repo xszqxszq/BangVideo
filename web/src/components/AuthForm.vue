@@ -17,7 +17,7 @@ export default defineComponent({
           <v-row>
             <v-col cols="12" md="8" class="pa-0 rounded-lg hidden-sm-and-down">
               <v-img
-                src="https://media.gettyimages.com/id/1469875556/video/4k-abstract-lines-background-loopable.jpg?s=640x640&k=20&c=oRhmLOFm1rQPZQSQrUqnd8eRd8LsoGLmiQS7nMIh-MU="
+                src="/background.jpg"
                 height="70vh"
                 cover
                 class="rounded-l-lg"

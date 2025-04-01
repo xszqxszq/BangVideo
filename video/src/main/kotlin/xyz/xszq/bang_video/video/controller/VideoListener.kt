@@ -2,7 +2,6 @@ package xyz.xszq.bang_video.video.controller
 
 import org.springframework.amqp.rabbit.annotation.Queue
 import org.springframework.amqp.rabbit.annotation.RabbitListener
-import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import xyz.xszq.bang_video.common.vo.VideoVO
 import xyz.xszq.bang_video.video.dto.AuditDTO
@@ -13,10 +12,6 @@ class VideoListener(
     private val service: VideoService
 ) {
     @RabbitListener(queuesToDeclare = [Queue("video.info")])
-    fun info(id: Long): Any {
-        return service.findById(id) ?: return false
-    }
-    @RabbitListener(queuesToDeclare = [Queue("video.info_batch")])
     fun batchInfo(ids: List<Long>): List<VideoVO> {
         return service.batch(ids)
     }

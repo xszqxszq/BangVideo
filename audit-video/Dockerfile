@@ -2,13 +2,15 @@ FROM python:3.10
 
 WORKDIR /app
 
-COPY requirements.txt /tmp/requirements.txt
-
-RUN pip install -r /tmp/requirements.txt
+COPY debian.sources /etc/apt/sources.list.d/
 
 RUN apt update && \
     apt install ffmpeg -y && \
     apt clean
+
+COPY requirements.txt /tmp/requirements.txt
+
+RUN pip install -i https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple -r /tmp/requirements.txt
 
 COPY . /app
 

@@ -87,8 +87,9 @@ class EncodingListener(
                 })
                 videoCodec("libx264")
                 preset("ultrafast")
-                hlsTime(2.0)
+                hlsTime(10.0)
                 hlsSegmentFilename(saveDir.resolve("${resolution.id}_%d.ts").toString())
+                hlsListSize(0)
                 forceFormat("hls")
                 yes()
             }.getResult(output)
@@ -99,7 +100,9 @@ class EncodingListener(
         saveDir.resolve("playlist.m3u8").writeText(buildString {
             appendLine("#EXTM3U")
             var bandwidth = 2000000
-            service.list().forEach { resolution ->
+            service.list().associateBy { it.id }.let { list ->
+                resolutions.mapNotNull { list[it] }
+            }.forEach { resolution ->
                 appendLine()
                 append("#EXT-X-STREAM-INF:BANDWIDTH=$bandwidth")
                 append(",RESOLUTION=${resolution.width}x${resolution.height}")

@@ -9,6 +9,7 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import xyz.xszq.bang_video.common.dto.VideoWithCID
 import xyz.xszq.bang_video.common.toTime
+import xyz.xszq.bang_video.common.vo.UserVO
 import xyz.xszq.bang_video.common.vo.VideoVO
 import xyz.xszq.bang_video.video.dto.AuditDTO
 import xyz.xszq.bang_video.video.dto.VideoDTO
@@ -43,7 +44,7 @@ class VideoService(
         videoRepository.save(video)
         rabbit.convertAndSend("video.encoding.queue", VideoWithCID(videoId, dto.cid))
 
-        return mapper.toVO(video)
+        return mapper.toVO(video, getUserVO(listOf(video.owner)).firstOrNull()?: return null)
     }
     fun profile(
         id: Long,
@@ -54,7 +55,7 @@ class VideoService(
             throw Exception("NotOwner")
         if (video.deleted)
             throw Exception("Deleted")
-        return mapper.toVO(video)
+        return mapper.toVO(video, getUserVO(listOf(video.owner)).firstOrNull()?: return null)
     }
     fun update(
         id: Long,
@@ -73,7 +74,7 @@ class VideoService(
         video.updated = LocalDateTime.now()
 
         videoRepository.save(video)
-        return mapper.toVO(video)
+        return mapper.toVO(video, getUserVO(listOf(video.owner)).firstOrNull()?: return null)
     }
     fun delete(
         id: Long,
@@ -96,8 +97,8 @@ class VideoService(
                 throw Exception("Deleted")
             if (!it.published)
                 throw Exception("NotPublished")
-            mapper.toVO(it)
-        }
+            mapper.toVO(it, getUserVO(listOf(it.owner)).firstOrNull()?: return null)
+        } ?: throw Exception("NotFound")
     }
     fun findByTag(tag: String): List<VideoVO> {
         val videos = mongoTemplate.find(
@@ -106,8 +107,9 @@ class VideoService(
                 .and("deleted").`is`(false)
                 .and("published").`is`(true)),
             Video::class.java
-        ).mapNotNull { mapper.toVO(it) }
-        return videos
+        )
+        val users = getUserVO(videos.map { it.owner }).associateBy { it.id }
+        return videos.mapNotNull { mapper.toVO(it, users[it.owner] ?: return@mapNotNull null) }
     }
     fun findByCategory(category: Int): List<VideoVO> {
         val videos = mongoTemplate.find(
@@ -116,8 +118,9 @@ class VideoService(
                 .and("deleted").`is`(false)
                 .and("published").`is`(true)),
             Video::class.java
-        ).mapNotNull { mapper.toVO(it) }
-        return videos
+        )
+        val users = getUserVO(videos.map { it.owner }).associateBy { it.id }
+        return videos.mapNotNull { mapper.toVO(it, users[it.owner] ?: return@mapNotNull null) }
     }
     fun findByUser(userId: Long, requirePublished: Boolean = true): List<VideoVO> {
         val videos = mongoTemplate.find(
@@ -131,8 +134,9 @@ class VideoService(
                         it
                 }),
             Video::class.java
-        ).mapNotNull { mapper.toVO(it) }
-        return videos
+        )
+        val users = getUserVO(videos.map { it.owner }).associateBy { it.id }
+        return videos.mapNotNull { mapper.toVO(it, users[it.owner] ?: return@mapNotNull null) }
     }
     fun search(keyword: String): List<VideoVO> {
         QueryBuilders
@@ -140,12 +144,15 @@ class VideoService(
             .query(keyword)
             .fields("title", "description", "tags")
             .build()
-        return videoRepository
+        val videos = videoRepository
             .findAllByIdIn(searchRepository.search(keyword).map { it.id })
-            .mapNotNull { mapper.toVO(it) }
+        val users = getUserVO(videos.map { it.owner }).associateBy { it.id }
+        return videos.mapNotNull { mapper.toVO(it, users[it.owner] ?: return@mapNotNull null) }
     }
     fun batch(list: List<Long>): List<VideoVO> {
-        return videoRepository.findAllByIdIn(list).mapNotNull { mapper.toVO(it) }
+        val videos = videoRepository.findAllByIdIn(list)
+        val users = getUserVO(videos.map { it.owner }).associateBy { it.id }
+        return videos.mapNotNull { mapper.toVO(it, users[it.owner] ?: return@mapNotNull null) }
     }
     fun updateViews(list: List<Pair<Long, Long>>) = list.forEach { (id, views) ->
         videoRepository.findByIdOrNull(id) ?.let { video ->
@@ -188,5 +195,13 @@ class VideoService(
         }
         sourceRepository.save(source)
         videoRepository.save(video)
+    }
+    fun getUserVO(ids: List<Long>): List<UserVO> {
+        return kotlin.runCatching {
+            @Suppress("UNCHECKED_CAST")
+            rabbit.convertSendAndReceive(
+                "user.info", ids
+            ) as List<UserVO>
+        }.getOrNull() ?: emptyList()
     }
 }

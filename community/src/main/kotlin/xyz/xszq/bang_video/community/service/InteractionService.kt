@@ -15,6 +15,9 @@ class InteractionService(
     fun view(videoId: Long, key: String) {
         redisTemplate.opsForSet().add("video:views:$videoId", key)
     }
+    fun infoLike(videoId: Long, userId: Long): Boolean {
+        return redisTemplate.opsForSet().isMember("video:likes:$videoId", userId.toString()) == true
+    }
     fun like(videoId: Long, userId: Long) {
         redisTemplate.opsForSet().add("video:ids", videoId.toString())
         redisTemplate.opsForSet().add("video:likes:$videoId", userId.toString())

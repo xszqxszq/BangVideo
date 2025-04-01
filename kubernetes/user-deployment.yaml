@@ -40,6 +40,10 @@ spec:
               value: root
             - name: MONGODB_PASSWORD
               value: password
+            - name: RABBITMQ_HOST
+              value: rabbitmq
+            - name: RABBITMQ_PORT
+              value: "5672"
           image: localhost:5000/bang-video/user:latest
           name: user
           ports:

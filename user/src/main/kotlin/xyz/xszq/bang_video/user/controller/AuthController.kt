@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController
 import xyz.xszq.bang_video.user.dto.UserCreateDTO
 import xyz.xszq.bang_video.user.dto.UserLoginDTO
 import xyz.xszq.bang_video.user.service.UserService
-import xyz.xszq.bang_video.user.vo.UserVO
+import xyz.xszq.bang_video.common.vo.UserVO
 
 @RestController
 class AuthController(

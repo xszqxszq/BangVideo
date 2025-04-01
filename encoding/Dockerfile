@@ -1,4 +1,6 @@
-FROM alibabadragonwell/dragonwell:21-ubuntu
+FROM debian:bullseye
+
+COPY sources.list /etc/apt/
 
 RUN apt update && \
     apt install -y ffmpeg && \
@@ -6,6 +8,6 @@ RUN apt update && \
 
 WORKDIR /app
 
-COPY build/libs/encoding-0.0.1-SNAPSHOT.jar /app/app.jar
+COPY build/native/nativeCompile/encoding /app/app
 
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["/app/app"]

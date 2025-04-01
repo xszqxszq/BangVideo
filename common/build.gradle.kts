@@ -8,13 +8,8 @@ plugins {
 group = "xyz.xszq.bang_video"
 version = "0.0.1-SNAPSHOT"
 
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
-    }
-}
-
 repositories {
+    maven("https://maven.aliyun.com/repository/public/")
     mavenCentral()
 }
 

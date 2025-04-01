@@ -1,8 +1,16 @@
 <script lang="ts">
 import {defineComponent} from 'vue'
+import user from "@/api/user";
+import router from "@/router";
+import {useAuthStore} from "@/stores/auth";
 
 export default defineComponent({
   name: "login",
+  setup() {
+    return {
+      authStore: useAuthStore()
+    }
+  },
   data() {
     return {
       form: {
@@ -19,10 +27,13 @@ export default defineComponent({
     passwordRule(v: string) {
       return v.length >= 6 || '密码至少6位'
     },
-    async handle() {
+    async login() {
       this.loading = true
       try {
-        await new Promise(resolve => setTimeout(resolve, 1000))
+        if (await user.login(this.form.username, this.form.password) !== null) {
+          await this.authStore.checkAuth()
+          await router.push('/')
+        }
       } finally {
         this.loading = false
       }
@@ -34,7 +45,7 @@ export default defineComponent({
 <template>
 
   <AuthForm>
-    <v-form @submit.prevent="handle" class="mx-auto" style="max-width: 400px">
+    <v-form @submit.prevent="login" class="mx-auto" style="max-width: 400px">
       <div class="text-h5 mb-8 font-weight-bold">登录</div>
 
       <v-text-field

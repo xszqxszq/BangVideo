@@ -1,23 +1,19 @@
-val alibabaCloudVersion: String by rootProject.extra
+//val alibabaCloudVersion: String by rootProject.extra
 val springCloudVersion: String by rootProject.extra
 plugins {
     kotlin("jvm")
     kotlin("kapt")
     kotlin("plugin.spring")
-    id("org.springframework.boot") version "3.4.3"
     id("io.spring.dependency-management")
+    id("org.graalvm.buildtools.native")
+    id("org.springframework.boot")
 }
 
 group = "xyz.xszq.bang_video"
 version = "0.0.1-SNAPSHOT"
 
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
-    }
-}
-
 repositories {
+    maven("https://maven.aliyun.com/repository/public/")
     mavenCentral()
 }
 
@@ -25,8 +21,9 @@ repositories {
 dependencies {
     kapt("org.mapstruct:mapstruct-processor:1.5.5.Final")
     implementation(project(":common"))
-    implementation("com.alibaba.cloud:spring-cloud-starter-alibaba-nacos-discovery")
+//    implementation("com.alibaba.cloud:spring-cloud-starter-alibaba-nacos-discovery")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("com.google.code.gson:gson:2.11.0")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.mapstruct:mapstruct:1.5.5.Final")
     implementation("org.springframework.boot:spring-boot-starter-amqp")
@@ -35,6 +32,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.cloud:spring-cloud-starter")
     implementation("org.springframework.cloud:spring-cloud-starter-loadbalancer")
+    implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
     implementation("org.springframework.integration:spring-integration-redis")
     implementation("org.springframework.session:spring-session-data-redis")
     kaptTest("org.mapstruct:mapstruct-processor:1.5.5.Final")
@@ -47,7 +45,7 @@ dependencies {
 dependencyManagement {
     imports {
         mavenBom("org.springframework.cloud:spring-cloud-dependencies:$springCloudVersion")
-        mavenBom("com.alibaba.cloud:spring-cloud-alibaba-dependencies:$alibabaCloudVersion")
+//        mavenBom("com.alibaba.cloud:spring-cloud-alibaba-dependencies:$alibabaCloudVersion")
     }
 }
 
@@ -65,4 +63,16 @@ kapt {
 }
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+graalvmNative {
+    metadataRepository {
+        version = "0.3.14"
+    }
+    binaries {
+        named("main") {
+            buildArgs.add("-H:ReflectionConfigurationFiles=../../../../reflect-config.json")
+            buildArgs.add("-H:ResourceConfigurationFiles=../../../../resource-config.json")
+        }
+    }
 }

@@ -31,6 +31,7 @@ class FFMpegTask(
         fun preset(preset: String) = insert(Argument("preset", preset))
         fun hlsTime(time: Double) = insert(Argument("hls_time", time.toString()))
         fun hlsSegmentFilename(filename: String) = insert(Argument("hls_segment_filename", filename))
+        fun hlsListSize(size: Int) = insert(Argument("hls_list_size", size.toString()))
     }
     private fun buildCommand(result: String): List<String> {
         return buildList {

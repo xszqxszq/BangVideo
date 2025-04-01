@@ -1,9 +1,9 @@
-FROM alibabadragonwell/dragonwell:21
+FROM debian:bullseye
 
 WORKDIR /app
 
-COPY build/libs/community-0.0.1-SNAPSHOT.jar /app/app.jar
+COPY build/native/nativeCompile/community /app/app
 
 EXPOSE 8003
 
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["/app/app"]

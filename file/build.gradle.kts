@@ -4,21 +4,17 @@ plugins {
 	kotlin("jvm")
 	kotlin("kapt")
 	kotlin("plugin.spring")
-	id("org.springframework.boot") version "3.4.3"
 	id("io.spring.dependency-management")
+	id("org.graalvm.buildtools.native")
+	id("org.springframework.boot")
 }
 
 
 group = "xyz.xszq.bang_video"
 version = "0.0.1-SNAPSHOT"
 
-java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(17)
-	}
-}
-
 repositories {
+	maven("https://maven.aliyun.com/repository/public/")
 	mavenCentral()
 }
 

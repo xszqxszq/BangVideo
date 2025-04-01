@@ -4,8 +4,6 @@ import org.springframework.stereotype.Service
 import xyz.xszq.bang_video.common.dto.EncodingResult
 import xyz.xszq.bang_video.video.entity.VideoSource
 import xyz.xszq.bang_video.video.repository.VideoSourceRepository
-import xyz.xszq.bang_video.video.vo.ResolutionVO
-import xyz.xszq.bang_video.video.vo.VideoSourceVO
 
 @Service
 class VideoSourceService(
@@ -29,19 +27,5 @@ class VideoSourceService(
             resolutions = emptyList()
         )
         repository.save(source)
-    }
-    fun get(cid: Long): VideoSourceVO? {
-        return repository.findByIdAndSucceededTrue(cid) ?.let { source ->
-            VideoSourceVO(
-                id = cid,
-                duration = source.duration,
-                fps = source.fps,
-                resolutions = source.resolutions.map { resolution ->
-                    ResolutionVO(
-                        id = resolution,
-                        url = "$static/video/$cid/$resolution.m3u8"
-                    )}
-            )
-        } ?: throw Exception("NotFound")
     }
 }

@@ -4,7 +4,7 @@ import org.mapstruct.*
 import xyz.xszq.bang_video.user.dto.UserCreateDTO
 import xyz.xszq.bang_video.user.entity.User
 import xyz.xszq.bang_video.user.vo.UserDetailedVO
-import xyz.xszq.bang_video.user.vo.UserVO
+import xyz.xszq.bang_video.common.vo.UserVO
 import java.time.LocalDateTime
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE)
@@ -35,5 +35,5 @@ abstract class UserMapper {
     ): User
 
     @Named("avatarUrl")
-    fun avatarUrl(uuid: String) = "$static/avatar/$uuid"
+    fun avatarUrl(uuid: String) = if (uuid.isBlank()) "" else "$static/avatar/$uuid"
 }

@@ -3,40 +3,38 @@ plugins {
     kotlin("kapt") version "1.9.22"
     kotlin("plugin.serialization") version "1.9.25" apply false
     kotlin("plugin.spring") version "1.9.25"
-    id("org.springframework.boot") version "3.4.3" apply false
     id("io.spring.dependency-management") version "1.1.7"
+    id("org.graalvm.buildtools.native") version "0.10.6" apply false
+    id("org.springframework.boot") version "3.4.3" apply false
 }
 
 group = "xyz.xszq"
 version = "0.0.1-SNAPSHOT"
 
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
-    }
-}
-
 repositories {
+    maven("https://maven.aliyun.com/repository/public/")
     mavenCentral()
 }
 
 allprojects {
     extra["springBootVersion"] = "3.4.3"
     extra["springCloudVersion"] = "2024.0.0"
-    extra["alibabaCloudVersion"] = "2022.0.0.0-RC2"
+    extra["alibabaCloudVersion"] = "2023.0.3.2"
 }
 
-val excludedTasks = listOf("common")
+val springbootExcluded = listOf("common")
+val graalVMExcluded = listOf("common", "eureka")
 subprojects {
     group = "xyz.xszq.bang_video"
     version = "0.0.1-SNAPSHOT"
-    if (this.name !in excludedTasks) {
+    if (this.name !in springbootExcluded) {
         apply(plugin = "org.springframework.boot")
     }
-    tasks.withType<Test> {
-        useJUnitPlatform()
+    if (this.name !in graalVMExcluded) {
+        apply(plugin = "org.graalvm.buildtools.native")
     }
 }
+
 tasks.forEach {
     it.enabled = false
 }

@@ -8,10 +8,24 @@
 import { createRouter, createWebHistory } from 'vue-router/auto'
 import { setupLayouts } from 'virtual:generated-layouts'
 import { routes } from 'vue-router/auto-routes'
+import {useAuthStore} from "@/stores/auth";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: setupLayouts(routes),
+})
+
+router.beforeEach(async (to, from, next) => {
+  let auth = useAuthStore()
+
+  if (!auth.isChecked) {
+    await auth.checkAuth()
+  }
+  if (to.matched.some(r => r.meta.requiresAuth) && !auth.isLoggedIn) {
+    return '/login'
+  }
+
+  return next()
 })
 
 // Workaround for https://github.com/vitejs/vite/issues/11804

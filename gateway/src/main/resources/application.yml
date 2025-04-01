@@ -1,12 +1,15 @@
 server:
   port: ${SERVER_PORT:7001}
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://${EUREKA_HOST:localhost}:${EUREKA_PORT:7000}/eureka/
 spring:
   application:
     name: gateway
   cloud:
-    nacos:
-      discovery:
-        server-addr: ${NACOS_SERVER:localhost:8848}
+    refresh:
+      enabled: false
     gateway:
       globalcors:
         add-to-simple-url-handler-mapping: true

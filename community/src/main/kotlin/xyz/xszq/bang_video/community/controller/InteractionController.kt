@@ -5,6 +5,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate
 import org.springframework.http.ResponseEntity
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RestController
@@ -29,6 +30,16 @@ class InteractionController(
             val userKey = userId?.toString()
                 ?: (getIP(request) + ":" + request.getHeader("User-Agent"))
             service.view(videoId, userKey)
+            return ResponseEntity.ok().build()
+        }
+    @GetMapping("/like/{videoId}")
+    fun infoLike(
+        @PathVariable
+        videoId: Long,
+        request: HttpServletRequest,
+    ): ResponseEntity<Boolean?> =
+        rabbit.withUser(videoId, request) { userId ->
+            service.infoLike(videoId, userId)
             return ResponseEntity.ok().build()
         }
     @PostMapping("/like/{videoId}")

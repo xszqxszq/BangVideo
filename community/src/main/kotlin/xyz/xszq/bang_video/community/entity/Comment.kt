@@ -4,7 +4,7 @@ import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.index.CompoundIndex
 import org.springframework.data.mongodb.core.index.CompoundIndexes
 import org.springframework.data.mongodb.core.mapping.Document
-import java.time.LocalDateTime
+import java.time.Instant
 
 @Document("comment")
 @CompoundIndexes(value = [
@@ -19,8 +19,8 @@ data class Comment(
     val user: Long,
     var content: String,
     val parent: String? = null,
-    val created: LocalDateTime = LocalDateTime.now(),
-    var updated: LocalDateTime = LocalDateTime.now(),
+    val created: Instant = Instant.now(),
+    var updated: Instant = Instant.now(),
     val likes: Int = 0,
     var deleted: Boolean = false
 )

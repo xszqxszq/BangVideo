@@ -10,7 +10,7 @@ import xyz.xszq.bang_video.user.entity.User
 import xyz.xszq.bang_video.user.mapper.UserMapper
 import xyz.xszq.bang_video.user.repository.UserRepository
 import xyz.xszq.bang_video.user.vo.UserDetailedVO
-import xyz.xszq.bang_video.user.vo.UserVO
+import xyz.xszq.bang_video.common.vo.UserVO
 import java.time.LocalDateTime
 
 @Service
@@ -37,6 +37,9 @@ class UserService(
     fun getUserById(
         id: Long,
     ): UserVO? = mapper.toVO(repository.findByIdOrNull(id))
+    fun getUserByIdBatch(
+        ids: List<Long>,
+    ): List<UserVO> = repository.findAllByIdIn(ids).mapNotNull { mapper.toVO(it) }
     fun getUserByNickname(
         nickname: String,
     ): UserVO? = mapper.toVO(repository.findByNicknameAndDeletedFalse(nickname))

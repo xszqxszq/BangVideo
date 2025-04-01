@@ -14,6 +14,7 @@
     "@mdi/font": "7.4.47",
     "@types/videojs-hls-quality-selector": "^1.1.3",
     "@videojs-player/vue": "^1.0.0",
+    "axios": "^1.8.4",
     "core-js": "^3.37.1",
     "roboto-fontface": "*",
     "video.js": "^8.22.0",

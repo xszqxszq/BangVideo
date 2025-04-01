@@ -13,7 +13,7 @@ services:
       test: ["CMD", "curl", "-f", "http://localhost:8848/nacos/"]
       interval: 5s
       timeout: 5s
-      retries: 10
+      retries: 20
 
   redis:
     networks:
@@ -117,6 +117,8 @@ services:
       - MONGODB_PORT=27017
       - MONGODB_USER=root
       - MONGODB_PASSWORD=password
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
       - STATIC_SERVER=http://localhost:7002
     depends_on:
       nacos:
