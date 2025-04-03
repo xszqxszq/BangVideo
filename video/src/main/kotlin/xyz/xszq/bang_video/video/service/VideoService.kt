@@ -5,6 +5,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
+import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import xyz.xszq.bang_video.common.dto.VideoWithCID
@@ -195,6 +196,9 @@ class VideoService(
         }
         sourceRepository.save(source)
         videoRepository.save(video)
+        rabbit.convertAndSend("notify.audit",
+            mapper.toVO(video, getUserVO(listOf(video.owner)).firstOrNull()?: return)!!
+        )
     }
     fun getUserVO(ids: List<Long>): List<UserVO> {
         return kotlin.runCatching {

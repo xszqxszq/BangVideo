@@ -2,6 +2,7 @@ package xyz.xszq.bang_video.community.service
 
 import org.mapstruct.Context
 import org.springframework.amqp.rabbit.core.RabbitTemplate
+import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import xyz.xszq.bang_video.common.vo.UserVO
@@ -18,7 +19,8 @@ import java.util.*
 class CommentService(
     private val repository: CommentRepository,
     private val mapper: CommentMapper,
-    private val rabbit: RabbitTemplate
+    private val rabbit: RabbitTemplate,
+    private val redisTemplate: StringRedisTemplate
 ) {
     fun list(videoId: Long): List<CommentVO> {
         val comments = repository.findAllByVideoAndDeletedIsFalse(videoId)
@@ -34,6 +36,9 @@ class CommentService(
         val time = Instant.now()
         val comment = mapper.fromDTO(id, videoId, userId, dto, time)
         repository.save(comment)
+        dto.parent ?.let {
+            notify(id, userId)
+        }
         return mapper.toInfoVO(comment)
     }
     fun update(commentId: String, userId: Long, dto: CommentDTO): CommentInfoVO? {

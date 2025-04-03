@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*
 import xyz.xszq.bang_video.common.withUser
 import xyz.xszq.bang_video.community.dto.CommentDTO
 import xyz.xszq.bang_video.community.service.CommentService
+import xyz.xszq.bang_video.community.service.NotificationService
 import xyz.xszq.bang_video.community.vo.CommentInfoVO
 import xyz.xszq.bang_video.community.vo.CommentVO
 
@@ -14,6 +15,7 @@ import xyz.xszq.bang_video.community.vo.CommentVO
 @RequestMapping("/comment")
 class CommentController(
     private val service: CommentService,
+    private val notification: NotificationService,
     private val rabbitTemplate: RabbitTemplate
 ) {
     @GetMapping("/{videoId}")
@@ -27,7 +29,11 @@ class CommentController(
         request: HttpServletRequest
     ): ResponseEntity<CommentInfoVO?> =
         rabbitTemplate.withUser(videoId, request) { userId ->
-            service.create(videoId, userId, dto)
+            service.create(videoId, userId, dto) ?.also { comment ->
+                dto.parent ?.let {
+                    notification.notifyComment(userId, comment)
+                }
+            }
         }
     @PutMapping("/{commentId}")
     fun update(
