@@ -72,7 +72,7 @@ graalvmNative {
         named("main") {
             buildArgs.add("-H:ReflectionConfigurationFiles=../../../../reflect-config.json")
             buildArgs.add("-H:ResourceConfigurationFiles=../../../../resource-config.json")
-            buildArgs.add("-Ob")
+            buildArgs.add("-O2")
         }
     }
 }

@@ -30,6 +30,7 @@ export default defineComponent({
   mounted() {
     comment.get(this.id).then(comments => {
       this.comments = comments
+      console.log(comments)
     })
   },
   methods: {
@@ -69,18 +70,116 @@ export default defineComponent({
       comments: [] as Array<Comment>,
       recommends: [{
         id: 1,
-        title: "视频标题",
+        title: "测试视频3",
         description: "简介",
-        views: 514,
+        views: 128,
         likes: 114,
-        cover: "/cover/6f101fcbba6868645554949ef07d07685b1ff830.png",
+        cover: "/cover/1.jpg",
         owner: {
           id: 1,
           nickname: "UP主",
           avatar: "https://avatars0.githubusercontent.com/u/9064066?v=4&s=460",
           watching: 114
         },
-        created: "2025/1/1 11:45:14"
+        created: "2025/4/11 10:03:40"
+      },{
+        id: 1,
+        title: "测试视频8",
+        description: "简介",
+        views: 10,
+        likes: 114,
+        cover: "/cover/2.jpg",
+        owner: {
+          id: 1,
+          nickname: "UP主",
+          avatar: "https://avatars0.githubusercontent.com/u/9064066?v=4&s=460",
+          watching: 114
+        },
+        created: "2025/4/12 11:30:07"
+      },{
+        id: 1,
+        title: "测试视频7",
+        description: "简介",
+        views: 634,
+        likes: 114,
+        cover: "/cover/3.jpg",
+        owner: {
+          id: 1,
+          nickname: "UP主",
+          avatar: "https://avatars0.githubusercontent.com/u/9064066?v=4&s=460",
+          watching: 114
+        },
+        created: "2025/4/12 10:12:10"
+      },{
+        id: 1,
+        title: "测试视频2",
+        description: "简介",
+        views: 339,
+        likes: 114,
+        cover: "/cover/4.png",
+        owner: {
+          id: 1,
+          nickname: "UP主",
+          avatar: "https://avatars0.githubusercontent.com/u/9064066?v=4&s=460",
+          watching: 114
+        },
+        created: "2025/4/11 10:02:33"
+      },{
+        id: 1,
+        title: "测试视频9",
+        description: "简介",
+        views: 97,
+        likes: 114,
+        cover: "/cover/5.jpg",
+        owner: {
+          id: 1,
+          nickname: "UP主",
+          avatar: "https://avatars0.githubusercontent.com/u/9064066?v=4&s=460",
+          watching: 114
+        },
+        created: "2025/4/12 11:45:14"
+      },{
+        id: 1,
+        title: "测试视频1",
+        description: "简介",
+        views: 114,
+        likes: 114,
+        cover: "/cover/6.jpg",
+        owner: {
+          id: 1,
+          nickname: "UP主",
+          avatar: "https://avatars0.githubusercontent.com/u/9064066?v=4&s=460",
+          watching: 114
+        },
+        created: "2025/4/11 10:01:20"
+      },{
+        id: 1,
+        title: "测试视频4",
+        description: "简介",
+        views: 306,
+        likes: 114,
+        cover: "/cover/7.jpg",
+        owner: {
+          id: 1,
+          nickname: "UP主",
+          avatar: "https://avatars0.githubusercontent.com/u/9064066?v=4&s=460",
+          watching: 114
+        },
+        created: "2025/4/11 10:04:05"
+      },{
+        id: 1,
+        title: "测试视频6",
+        description: "简介",
+        views: 1679,
+        likes: 114,
+        cover: "/cover/8.jpg",
+        owner: {
+          id: 1,
+          nickname: "UP主",
+          avatar: "https://avatars0.githubusercontent.com/u/9064066?v=4&s=460",
+          watching: 114
+        },
+        created: "2025/4/12 11:06:42"
       },{
         id: 1,
         title: "视频标题",
@@ -94,7 +193,7 @@ export default defineComponent({
           avatar: "https://avatars0.githubusercontent.com/u/9064066?v=4&s=460",
           watching: 114
         },
-        created: "2025/1/1 11:45:14"
+        created: "2025/4/11 11:45:14"
       }],
       options: {
         playbackRates: [0.5, 1.0, 1.5, 2.0],

@@ -1,4 +1,4 @@
-val springCloudVersion: String by rootProject.extra
+val springBootVersion: String by rootProject.extra
 plugins {
     kotlin("jvm")
     kotlin("plugin.serialization")
@@ -26,7 +26,7 @@ dependencies {
 }
 dependencyManagement {
     imports {
-        mavenBom("org.springframework.cloud:spring-cloud-dependencies:$springCloudVersion")
+        mavenBom("org.springframework.boot:spring-boot-dependencies:$springBootVersion")
     }
 }
 
